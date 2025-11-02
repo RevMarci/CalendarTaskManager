@@ -1,7 +1,12 @@
-import dotenv from 'dotenv'
 import express from 'express';
+import sequelize from './config/database.js';
+import Task from './models/task.js';
 
-dotenv.config({ path: '../.env' })
+import taskRoutes from './routes/taskRoutes.js';
+
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '../.env' });
 
 const app = express();
 app.use(express.json());
@@ -9,11 +14,25 @@ app.use(express.json());
 const PORT = process.env.DEV_BE_PORT;
 
 // Start app
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+async function startServer() {
+    try {
+        await sequelize.authenticate();
+        console.log('Database connected!');
+        await sequelize.sync();
+
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+    } catch (error) {
+        console.error('Unable to connect to the database:', error);
+    }
+}
 
 // Endpoints
 app.get('', (req, res) => {
     res.json({ message: 'Backend is running!' });
 });
+
+app.use('/api/tasks', taskRoutes);
+
+startServer();
