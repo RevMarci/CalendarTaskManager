@@ -1,8 +1,8 @@
 import express from 'express';
 import sequelize from './config/database.js';
-import Task from './models/task.js';
 
 import taskRoutes from './routes/taskRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 
 import dotenv from 'dotenv';
 
@@ -34,5 +34,6 @@ app.get('', (req, res) => {
 });
 
 app.use('/api/tasks', taskRoutes);
+app.use('/api/events', eventRoutes);
 
 startServer();

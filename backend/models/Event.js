@@ -1,8 +1,8 @@
 import DataTypes from 'sequelize';
 import sequelize from '../config/database.js';
 
-const Task = sequelize.define(
-    'Task',
+const Event = sequelize.define(
+    'Event',
     {
         id: {
             type: DataTypes.INTEGER,
@@ -19,11 +19,21 @@ const Task = sequelize.define(
             type: DataTypes.STRING,
             allowNull: true,
         },
+
+        startDate: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+
+        endDate: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
     },
     {
-        tableName: 'tasks',
+        tableName: 'events',
         timestamps: true,
     }
 );
 
-export default Task;
+export default Event;
