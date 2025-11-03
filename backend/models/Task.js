@@ -1,4 +1,4 @@
-import DataTypes from 'sequelize';
+import { DataTypes } from 'sequelize';
 import sequelize from '../config/database.js';
 
 const Task = sequelize.define(
@@ -15,9 +15,25 @@ const Task = sequelize.define(
             allowNull: false,
         },
 
+        status: {
+            type: DataTypes.ENUM('pending', 'completed'),
+            defaultValue: 'pending',
+        },
+
         description: {
-            type: DataTypes.STRING,
-            allowNull: true,
+            type: DataTypes.TEXT,
+        },
+
+        deadline: {
+            type: DataTypes.DATE,
+        },
+
+        duration: {
+            type: DataTypes.INTEGER, // minutes
+        },
+
+        startTime: {
+            type: DataTypes.DATE,
         },
     },
     {

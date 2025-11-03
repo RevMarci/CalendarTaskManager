@@ -11,14 +11,14 @@ dotenv.config({ path: '../.env' });
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.DEV_BE_PORT;
+const PORT = process.env.DEV_BE_PORT || 5000;
 
 // Start app
 async function startServer() {
     try {
         await sequelize.authenticate();
         console.log('Database connected!');
-        await sequelize.sync();
+        await sequelize.sync({ alter: true });
 
         app.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
