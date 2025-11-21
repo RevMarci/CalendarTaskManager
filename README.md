@@ -4,4 +4,4 @@ cd backend
 npm run start
 
 cd frontend  
-npm start
+npm run dev
