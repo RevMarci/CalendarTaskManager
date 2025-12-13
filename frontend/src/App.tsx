@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import Calendar from './pages/Calendar';
-import Task from './pages/Task';
+import Calendar from './pages/calendar/Calendar';
+import Task from './pages/task/TaskPage';
 
 function App() {
     return (
@@ -9,7 +9,7 @@ function App() {
             
             <Sidebar />
 
-            <main className="flex-1 p-8 overflow-y-auto">
+            <main className="flex-1 p-8 overflow-y-auto bg-black text-white">
                 <div className="max-w-4xl">
                     <Routes>
                         <Route path="/" element={<h1 className="text-3xl font-bold text-gray-800">Üdv az Appban!</h1>} />

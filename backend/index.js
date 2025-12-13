@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import sequelize from './config/database.js';
 
 import taskRoutes from './routes/taskRoutes.js';
@@ -9,6 +10,8 @@ import dotenv from 'dotenv';
 dotenv.config({ path: '../.env' });
 
 const app = express();
+
+app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.DEV_BE_PORT || 5000;
