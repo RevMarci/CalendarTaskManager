@@ -9,8 +9,8 @@ function App() {
             
             <Sidebar />
 
-            <main className="flex-1 p-8 overflow-y-auto bg-black text-white">
-                <div className="max-w-4xl">
+            <main className="flex-1 p-6 bg-black text-white h-screen overflow-hidden">
+                <div className="h-full w-full">
                     <Routes>
                         <Route path="/" element={<h1 className="text-3xl font-bold text-gray-800">Üdv az Appban!</h1>} />
                         <Route path="/calendar" element={<Calendar />} />

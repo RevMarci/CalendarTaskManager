@@ -10,7 +10,7 @@ const Event = sequelize.define(
             autoIncrement: true,
         },
 
-        name: {
+        title: {
             type: DataTypes.STRING,
             allowNull: false,
         },
@@ -20,15 +20,20 @@ const Event = sequelize.define(
             allowNull: true,
         },
 
-        startDate: {
+        start: {
+            type: DataTypes.DATE,
+            allowNull: false,
+        },
+        
+        end: {
             type: DataTypes.DATE,
             allowNull: false,
         },
 
-        endDate: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
+        allDay: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        }
     },
     {
         tableName: 'events',
