@@ -89,7 +89,7 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
                 onClick={(e) => e.stopPropagation()}
             >
                 <h2 className="text-xl font-bold text-white mb-6">
-                    {event ? 'Esemény szerkesztése' : 'Új esemény'}
+                    {event ? 'Edit event' : 'New event'}
                 </h2>
                 
                 <form onSubmit={handleSubmit} className="space-y-5">
