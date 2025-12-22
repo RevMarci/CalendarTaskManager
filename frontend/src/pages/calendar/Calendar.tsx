@@ -7,6 +7,8 @@ import { eventService, type CalendarEvent } from '../../services/eventService';
 import CalendarModal from './CalendarModal';
 import AddButton from '../../components/buttons/AddButton';
 
+import '../../styles/Calendar.css';
+
 export default function Calendar() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
     
@@ -87,62 +89,6 @@ export default function Calendar() {
             </div>
 
             <div className="flex-1 min-h-0 bg-black text-gray-200">
-                <style>{`
-                    :root {
-                        --fc-border-color: #1f2937;
-                        --fc-page-bg-color: black;
-                        --fc-neutral-bg-color: black;
-                        --fc-list-event-hover-bg-color: #1f2937;
-                    }
-                    
-                    .fc-header-toolbar {
-                        margin-bottom: 1rem !important;
-                    }
-
-                    .fc .fc-button-primary {
-                        background-color: transparent;
-                        border-color: #1f2937;
-                        color: #9ca3af;
-                        text-transform: capitalize;
-                        font-weight: 500;
-                    }
-                    .fc .fc-button-primary:hover {
-                        background-color: #111827;
-                        color: white;
-                    }
-                    .fc .fc-button-primary:not(:disabled).fc-button-active,
-                    .fc .fc-button-primary:not(:disabled):active {
-                        background-color: #1e3a8a20;
-                        border-color: #1e3a8a;
-                        color: #60a5fa;
-                    }
-                    .fc-col-header-cell-cushion { color: #9ca3af; font-size: 0.75rem; text-transform: uppercase; padding: 10px 0; }
-                    .fc-daygrid-day-number { color: #d1d5db; padding: 8px; }
-                    .fc .fc-daygrid-day.fc-day-today { background-color: #1e3a8a10; }
-                    
-                    .fc-event {
-                        cursor: pointer;
-                        border: none;
-                        border-radius: 4px;
-                        transition: filter 0.2s;
-                    }
-                    .fc-event:hover {
-                        filter: brightness(1.2);
-                    }
-                    .fc-event-main { color: #e5e7eb; padding: 2px 4px; font-weight: 500; font-size: 0.75rem; }
-
-                    .custom-timed-event {
-                        background-color: #1e3a8a40 !important;
-                        border-left: 3px solid #1e3a8a !important;
-                    }
-                    .custom-timed-event .fc-event-main { color: #93c5fd; }
-
-                    .custom-allday-event {
-                        background-color: #581c87 !important;
-                        border: 1px solid #7e22ce !important;
-                    }
-                    .custom-allday-event .fc-event-main { color: #e9d5ff; text-align: center; font-weight: bold; }
-                `}</style>
 
                 <FullCalendar
                     plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
