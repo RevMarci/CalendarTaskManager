@@ -1,32 +1,31 @@
-import Task from './Task';
-import type { Task as TaskModel } from '../../models/Task';
+import type { Task } from '../../models/Task';
 import type { TaskStatus } from '../../models/TaskStatus';
+import TaskItem from './TaskItem';
 
 interface ListProps {
-    tasks: TaskModel[];
-    onStatusChange: (id: number, newStatus: TaskStatus) => Promise<void>; 
-    onEdit: (task: TaskModel) => void;
+    tasks: Task[];
+    onStatusChange: (id: number, status: TaskStatus) => void;
+    onEdit: (task: Task) => void;
 }
 
 export default function List({ tasks, onStatusChange, onEdit }: ListProps) {
     if (tasks.length === 0) {
-        return (
-            <div className="text-center py-10 border border-dashed border-gray-800 rounded-lg">
-                <p className="text-gray-400">Nothing to do here...</p>
-            </div>
-        );
+        return <div className="text-gray-500 text-center py-10">No tasks yet.</div>;
     }
 
     return (
-        <ul className="space-y-3">
+        <div className="space-y-3">
             {tasks.map((task) => (
-                <Task 
-                    key={task.id} 
-                    task={task} 
-                    onStatusChange={onStatusChange}
-                    onClick={() => onEdit(task)} 
+                <TaskItem 
+                    key={task.id}
+                    task={task}
+                    onToggleStatus={(id, currentStatus) => {
+                        const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+                        onStatusChange(id, newStatus);
+                    }}
+                    onEdit={onEdit}
                 />
             ))}
-        </ul>
+        </div>
     );
 }
