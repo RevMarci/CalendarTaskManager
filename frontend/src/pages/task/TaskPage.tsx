@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTasks } from '../../hooks/useTasks';
 import List from './List';
-import New from './New';
+import AddButton from '../../components/buttons/AddButton';
 import TaskModal from './TaskModal';
 import type { Task } from '../../models/Task';
 
@@ -39,7 +39,9 @@ export default function TaskPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-white">Tasks</h1>
                 </div>
-                <New onOpen={openNewModal} />
+                <AddButton onClick={openNewModal}>
+                    + New Task
+                </AddButton>
             </div>
 
             <List 

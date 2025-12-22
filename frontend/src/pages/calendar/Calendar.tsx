@@ -5,6 +5,7 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { eventService, type CalendarEvent } from '../../services/eventService';
 import CalendarModal from './CalendarModal';
+import AddButton from '../../components/buttons/AddButton';
 
 export default function Calendar() {
     const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -80,12 +81,9 @@ export default function Calendar() {
             
             <div className="flex justify-between items-center mb-4 flex-shrink-0">
                 <h1 className="text-3xl font-bold text-white">Calendar</h1>
-                <button 
-                    onClick={handleNewEventClick}
-                    className="cursor-pointer border border-blue-900 text-blue-400 bg-blue-900/20 px-4 py-2 rounded hover:bg-blue-900/60 transition-colors font-medium text-sm"
-                >
+                <AddButton onClick={handleNewEventClick}>
                     + New Event
-                </button>
+                </AddButton>
             </div>
 
             <div className="flex-1 min-h-0 bg-black text-gray-200">

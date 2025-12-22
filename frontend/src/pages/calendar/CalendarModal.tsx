@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import type { CalendarEvent } from '../../services/eventService';
+import DeleteButton from '../../components/buttons/DeleteButton';
+import CancelButton from '../../components/buttons/CancelButton';
+import SaveButton from '../../components/buttons/SaveButton';
 
 interface CalendarModalProps {
     isOpen: boolean;
@@ -164,31 +167,23 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
                     <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-900">
                         <div>
                             {event && (
-                                <button 
+                                <DeleteButton 
                                     type="button"
                                     onClick={handleDelete}
-                                    className="px-4 py-2 rounded text-sm font-medium border border-red-900 text-red-400 bg-red-900/10 hover:bg-red-900/30 transition-colors cursor-pointer"
                                 >
                                     Delete
-                                </button>
+                                </DeleteButton>
                             )}
                         </div>
 
                         <div className="flex gap-3">
-                            <button 
-                                type="button" 
-                                onClick={onClose}
-                                className="px-4 py-2 rounded text-sm font-medium border border-gray-800 text-gray-400 hover:text-white hover:bg-gray-900 transition-colors cursor-pointer"
-                            >
+                            <CancelButton onClick={onClose}>
                                 Cancel
-                            </button>
+                            </CancelButton>
                             
-                            <button 
-                                type="submit"
-                                className="px-4 py-2 rounded text-sm font-medium border border-blue-900 text-blue-400 bg-blue-900/20 hover:bg-blue-900/40 transition-colors cursor-pointer"
-                            >
+                            <SaveButton type="submit">
                                 Save
-                            </button>
+                            </SaveButton>
                         </div>
                     </div>
                 </form>
