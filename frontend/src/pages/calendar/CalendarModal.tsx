@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { CalendarEvent } from '../../services/eventService';
+import Modal from '../../components/Modal';
+import TextInput from '../../components/inputs/TextInput';
+import TextArea from '../../components/inputs/TextArea';
+import Checkbox from '../../components/inputs/Checkbox';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
@@ -55,8 +59,6 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
         }
     }, [event, isOpen, initialDateRange]);
 
-    if (!isOpen) return null;
-
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -74,120 +76,79 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     };
 
     const handleDelete = () => {
-        if (event && event.id) {
-            if (confirm('Biztosan törölni szeretnéd ezt az eseményt?')) {
-                onDelete(event.id);
-                onClose();
-            }
+        if (event?.id && confirm('You sure you want to delete this event?')) {
+            onDelete(event.id);
+            onClose();
         }
     };
 
     return (
-        <div 
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
-            onClick={onClose}
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={event ? 'Edit event' : 'New event'}
         >
-            <div 
-                className="bg-black border border-gray-800 rounded-lg w-full max-w-md p-6 shadow-2xl shadow-blue-900/10"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <h2 className="text-xl font-bold text-white mb-6">
-                    {event ? 'Edit event' : 'New event'}
-                </h2>
-                
-                <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
+                <TextInput 
+                    label="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                />
+
+                <Checkbox 
+                    label="All Day Event"
+                    checked={allDay}
+                    onChange={setAllDay}
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                    <TextInput 
+                        label="Start"
+                        type="datetime-local"
+                        value={start}
+                        onChange={(e) => setStart(e.target.value)}
+                        required
+                        style={{ colorScheme: 'dark' }}
+                    />
+                    
+                    <TextInput 
+                        label="End"
+                        type="datetime-local"
+                        value={end}
+                        onChange={(e) => setEnd(e.target.value)}
+                        required
+                        style={{ colorScheme: 'dark' }}
+                    />
+                </div>
+
+                <TextArea 
+                    label="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="h-24"
+                />
+
+                <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-900">
                     <div>
-                        <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide">Title</label>
-                        <input 
-                            type="text" 
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            required
-                            className="w-full bg-black border border-gray-800 rounded p-2.5 text-white placeholder-gray-600 focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors"
-                        />
+                        {event && (
+                            <DeleteButton type="button" onClick={handleDelete}>
+                                Delete
+                            </DeleteButton>
+                        )}
                     </div>
 
-                    <div 
-                        onClick={() => setAllDay(!allDay)}
-                        className={`w-full bg-black flex items-center gap-3 cursor-pointer transition-all group ${
-                            allDay
-                        }`}
-                    >
-                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                            allDay 
-                                ? 'bg-blue-600 border-blue-600 text-black' 
-                                : 'border-gray-600 bg-transparent group-hover:border-gray-500'
-                        }`}>
-                            {allDay && (
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
-                                    <path fillRule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clipRule="evenodd" />
-                                </svg>
-                            )}
-                        </div>
+                    <div className="flex gap-3">
+                        <CancelButton onClick={onClose}>
+                            Cancel
+                        </CancelButton>
                         
-                        <span className={`text-sm font-medium select-none ${allDay ? 'text-blue-200' : 'text-gray-400 group-hover:text-gray-300'}`}>
-                            All Day Event
-                        </span>
+                        <SaveButton type="submit">
+                            Save
+                        </SaveButton>
                     </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide">Start</label>
-                            <input 
-                                type="datetime-local" 
-                                value={start}
-                                onChange={(e) => setStart(e.target.value)}
-                                required
-                                style={{ colorScheme: 'dark' }}
-                                className="w-full bg-black border border-gray-800 rounded p-2.5 text-white focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide">End</label>
-                            <input 
-                                type="datetime-local" 
-                                value={end}
-                                onChange={(e) => setEnd(e.target.value)}
-                                required
-                                style={{ colorScheme: 'dark' }}
-                                className="w-full bg-black border border-gray-800 rounded p-2.5 text-white focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-400 mb-1.5 tracking-wide">Description</label>
-                        <textarea 
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="w-full bg-black border border-gray-800 rounded p-2.5 text-white placeholder-gray-600 focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors h-24 resize-none"
-                        />
-                    </div>
-
-                    <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-900">
-                        <div>
-                            {event && (
-                                <DeleteButton 
-                                    type="button"
-                                    onClick={handleDelete}
-                                >
-                                    Delete
-                                </DeleteButton>
-                            )}
-                        </div>
-
-                        <div className="flex gap-3">
-                            <CancelButton onClick={onClose}>
-                                Cancel
-                            </CancelButton>
-                            
-                            <SaveButton type="submit">
-                                Save
-                            </SaveButton>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+                </div>
+            </form>
+        </Modal>
     );
 }

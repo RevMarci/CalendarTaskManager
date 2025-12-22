@@ -22,7 +22,7 @@ export default function Task({ task, onStatusChange, onClick }: TaskItemProps) {
             const newStatus: TaskStatus = task.status === 'completed' ? 'pending' : 'completed';
             await onStatusChange(task.id, newStatus);
         } catch (error) {
-            console.error("Hiba történt", error);
+            console.error("Error occurred", error);
         } finally {
             setIsUpdating(false);
         }
