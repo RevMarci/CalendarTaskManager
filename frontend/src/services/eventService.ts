@@ -10,15 +10,16 @@ export interface CalendarEvent {
 }
 
 interface ApiResponse<T> {
+    success: boolean;
     message: string;
     data: T;
 }
 
 export const eventService = {
     getAll: async () => {
-        const rawEvents = await apiClient<any[]>('/events');
+        const response = await apiClient<ApiResponse<any[]>>('/events');
         
-        return rawEvents.map(event => ({
+        return response.data.map(event => ({
             ...event,
             id: String(event.id)
         })) as CalendarEvent[];

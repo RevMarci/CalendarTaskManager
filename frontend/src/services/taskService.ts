@@ -2,13 +2,15 @@ import { apiClient } from "../api/apiClient";
 import type { Task } from "../models/Task";
 
 interface ApiResponse<T> {
+    success: boolean;
     message: string;
     data: T;
 }
 
 export const taskService = {
     getAll: async () => {
-        return await apiClient<Task[]>('/tasks');
+        const response = await apiClient<ApiResponse<Task[]>>('/tasks');
+        return response.data;
     },
 
     create: async (taskData: Partial<Task>) => {

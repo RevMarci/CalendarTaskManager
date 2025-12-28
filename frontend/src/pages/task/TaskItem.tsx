@@ -23,7 +23,7 @@ export default function TaskItem({ task, onToggleStatus, onEdit }: TaskItemProps
                 
                 <div>
                     <h3 className={`font-medium ${isCompleted ? 'text-gray-500 line-through' : 'text-gray-200'}`}>
-                        {task.name}
+                        {task.title}
                     </h3>
                     {task.description && (
                         <p className="text-sm text-gray-500 mt-1 truncate max-w-md">

@@ -1,13 +1,14 @@
 import { Request, Response } from 'express';
 import * as eventService from '../services/eventService';
+import { sendSuccess, sendError } from '../utils/response';
 
 export const getEvents = async (req: Request, res: Response) => {
     try {
         const events = await eventService.getAllEvents(req.user!.id);
-        res.status(200).json(events);
+        sendSuccess(res, events, 'Events fetched successfully');
     } catch (error) {
         console.error('Error in getEvents:', error);
-        res.status(500).json({ message: 'Error fetching events' });
+        sendError(res, 'Error fetching events', 500, error);
     }
 };
 
@@ -16,14 +17,13 @@ export const getEvent = async (req: Request, res: Response) => {
         const event = await eventService.getEventById(req.params.id, req.user!.id);
 
         if (!event) {
-            res.status(404).json({ message: 'Event not found' });
-            return;
+            return sendError(res, 'Event not found', 404);
         }
 
-        res.status(200).json(event);
+        sendSuccess(res, event);
     } catch (error) {
         console.error(`Error in getEvent (${req.params.id}):`, error);
-        res.status(500).json({ message: 'Error fetching event' });
+        sendError(res, 'Error fetching event', 500, error);
     }
 };
 
@@ -32,15 +32,14 @@ export const createEvent = async (req: Request, res: Response) => {
         const { title, start, end, allDay } = req.body;
 
         if (!title || !start) {
-            res.status(400).json({ message: 'Title and start date are required' });
-            return;
+            return sendError(res, 'Title and start date are required', 400);
         }
 
         const event = await eventService.createEvent({ title, start, end, allDay }, req.user!.id);
-        res.status(201).json(event);
+        sendSuccess(res, event, 'Event created successfully', 201);
     } catch (error) {
         console.error('Error in createEvent:', error);
-        res.status(500).json({ message: 'Error creating event' });
+        sendError(res, 'Error creating event', 500, error);
     }
 };
 
@@ -49,14 +48,13 @@ export const deleteEvent = async (req: Request, res: Response) => {
         const result = await eventService.deleteEvent(req.params.id, req.user!.id);
 
         if (!result) {
-            res.status(404).json({ message: 'Event not found' });
-            return;
+            return sendError(res, 'Event not found', 404);
         }
 
-        res.status(200).json({ id: req.params.id });
+        sendSuccess(res, { id: req.params.id }, 'Event deleted successfully');
     } catch (error) {
         console.error('Error in deleteEvent:', error);
-        res.status(500).json({ message: 'Error deleting event' });
+        sendError(res, 'Error deleting event', 500, error);
     }
 };
 
@@ -65,13 +63,12 @@ export const updateEvent = async (req: Request, res: Response) => {
         const updatedEvent = await eventService.updateEvent(req.params.id, req.user!.id, req.body);
 
         if (!updatedEvent) {
-            res.status(404).json({ message: 'Event not found' });
-            return;
+            return sendError(res, 'Event not found', 404);
         }
 
-        res.status(200).json(updatedEvent);
+        sendSuccess(res, updatedEvent, 'Event updated successfully');
     } catch (error) {
         console.error('Error in updateEvent:', error);
-        res.status(500).json({ message: 'Error updating event' });
+        sendError(res, 'Error updating event', 500, error);
     }
 };
