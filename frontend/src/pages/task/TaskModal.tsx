@@ -17,19 +17,19 @@ interface TaskModalProps {
 }
 
 export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: TaskModalProps) {
-    const [name, setName] = useState('');
+    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [deadline, setDeadline] = useState('');
     const [status, setStatus] = useState<TaskStatus>('pending');
 
     useEffect(() => {
         if (task) {
-            setName(task.name);
+            setTitle(task.title);
             setDescription(task.description || '');
             setDeadline(task.deadline ? task.deadline.split('T')[0] : '');
             setStatus(task.status);
         } else {
-            setName('');
+            setTitle('');
             setDescription('');
             setDeadline('');
             setStatus('pending');
@@ -38,7 +38,7 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave({ ...task, name, description, deadline: deadline || undefined, status });
+        onSave({ ...task, title, description, deadline: deadline || undefined, status });
         onClose();
     };
 
@@ -58,8 +58,8 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
             <form onSubmit={handleSubmit} className="space-y-5">
                 <TextInput 
                     label="Title"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     required
                 />
 

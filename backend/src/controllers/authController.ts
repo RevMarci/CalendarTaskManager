@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
+import { sendSuccess, sendError } from '../utils/response';
 
 const generateToken = (id: number): string => {
     return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -14,15 +15,13 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         const { username, password } = req.body;
 
         if (!username || !password) {
-            res.status(400).json({ message: 'Please add all fields' });
-            return;
+            return sendError(res, 'Please add all fields', 400);
         }
 
         const userExists = await User.findOne({ where: { username } });
 
         if (userExists) {
-            res.status(400).json({ message: 'User already exists' });
-            return;
+            return sendError(res, 'User already exists', 400);
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -34,17 +33,17 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
         });
 
         if (user) {
-            res.status(201).json({
+            sendSuccess(res, {
                 id: user.id,
                 username: user.username,
                 token: generateToken(user.id),
-            });
+            }, 'User registered successfully', 201);
         } else {
-            res.status(400).json({ message: 'Invalid user data' });
+            sendError(res, 'Invalid user data', 400);
         }
     } catch (error) {
         console.error('Register error:', error);
-        res.status(500).json({ message: 'Server error during registration' });
+        sendError(res, 'Server error during registration', 500, error);
     }
 };
 
@@ -55,27 +54,27 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
         const user = await User.findOne({ where: { username } });
 
         if (user && (await bcrypt.compare(password, user.password))) {
-            res.json({
+            sendSuccess(res, {
                 id: user.id,
                 username: user.username,
                 token: generateToken(user.id),
-            });
+            }, 'Login successful');
         } else {
-            res.status(401).json({ message: 'Invalid credentials' });
+            sendError(res, 'Invalid credentials', 401);
         }
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
+        sendError(res, 'Server error during login', 500, error);
     }
 };
 
 export const getMe = async (req: Request, res: Response): Promise<void> => {
     if (req.user) {
-        res.status(200).json({
+        sendSuccess(res, {
             id: req.user.id,
             username: req.user.username,
         });
     } else {
-         res.status(404).json({ message: 'User not found' });
+         sendError(res, 'User not found', 404);
     }
 };

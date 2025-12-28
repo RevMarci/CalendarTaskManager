@@ -5,25 +5,49 @@ interface LoginCredentials {
     password?: string;
 }
 
-interface AuthResponse {
+interface AuthData {
     id: number;
     username: string;
     token: string;
 }
 
+interface ApiResponse<T> {
+    success: boolean;
+    message: string;
+    data: T;
+}
+
 export const authService = {
     login: async (credentials: LoginCredentials) => {
-        const response = await apiClient<AuthResponse>('/auth/login', {
+        const response = await apiClient<ApiResponse<AuthData>>('/auth/login', {
             method: 'POST',
             body: credentials
         });
         
-        if (response?.token) {
-            localStorage.setItem('token', response.token);
-            localStorage.setItem('user', JSON.stringify({ id: response.id, username: response.username }));
+        const authData = response.data;
+
+        if (authData?.token) {
+            localStorage.setItem('token', authData.token);
+            localStorage.setItem('user', JSON.stringify({ id: authData.id, username: authData.username }));
         }
         
-        return response;
+        return authData;
+    },
+
+    register: async (credentials: LoginCredentials) => {
+        const response = await apiClient<ApiResponse<AuthData>>('/auth/register', {
+            method: 'POST',
+            body: credentials
+        });
+
+        const authData = response.data;
+
+        if (authData?.token) {
+            localStorage.setItem('token', authData.token);
+            localStorage.setItem('user', JSON.stringify({ id: authData.id, username: authData.username }));
+        }
+
+        return authData;
     },
 
     logout: () => {

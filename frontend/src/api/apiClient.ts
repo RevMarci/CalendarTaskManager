@@ -28,10 +28,16 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
         const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
         if (response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
-            throw new Error('Unauthorized');
+            const isAuthEndpoint = endpoint.includes('/auth/login') || endpoint.includes('/auth/register');
+            
+            if (!isAuthEndpoint) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/login';
+            }
+
+            const errorData = await response.json().catch(() => null);
+            throw new Error(errorData?.message || 'Unauthorized');
         }
 
         if (!response.ok) {

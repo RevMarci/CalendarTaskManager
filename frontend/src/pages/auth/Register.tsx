@@ -4,9 +4,10 @@ import { authService } from '../../services/authService';
 import TextInput from '../../components/inputs/TextInput';
 import SaveButton from '../../components/buttons/SaveButton';
 
-export default function Login() {
+export default function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -14,24 +15,29 @@ export default function Login() {
         e.preventDefault();
         setError('');
 
+        if (password !== confirmPassword) {
+            setError('The passwords do not match');
+            return;
+        }
+
         try {
-            await authService.login({ username, password });
+            await authService.register({ username, password });
             navigate('/task');
         } catch (err: any) {
-            setError(err.message || 'Error during login');
+            setError(err.message || 'Error during registration');
         }
     };
 
     return (
         <div className="flex flex-col items-center justify-center h-full max-w-md mx-auto">
-            <h1 className="text-3xl font-bold mb-8 text-white">Login</h1>
+            <h1 className="text-3xl font-bold mb-8 text-white">Registration</h1>
             
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
                 <TextInput
                     label="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder="Choose a username"
                 />
                 
                 <TextInput
@@ -39,7 +45,15 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder="Choose a password"
+                />
+
+                <TextInput
+                    label="Confirm Password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Enter your password again"
                 />
 
                 {error && (
@@ -51,14 +65,14 @@ export default function Login() {
                 <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center">
                         <SaveButton type="submit">
-                        Login
+                            Registration
                         </SaveButton>
                     </div>
-
+                    
                     <div className="text-center text-sm text-gray-500">
-                        Don't have an account yet?{' '}
-                        <Link to="/register" className="text-blue-400 hover:text-blue-300">
-                            Register
+                        Already have an account?{' '}
+                        <Link to="/login" className="text-blue-400 hover:text-blue-300">
+                            Login
                         </Link>
                     </div>
                 </div>
