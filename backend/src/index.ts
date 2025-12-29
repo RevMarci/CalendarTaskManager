@@ -25,7 +25,7 @@ app.use('/api/auth', authRoutes);
 
 const startServer = async (): Promise<void> => {
     try {
-        await sequelize.sync({ force: true }); 
+        await sequelize.sync({ alter: true }); 
 
         console.log('Database connected and synced successfully.');
 

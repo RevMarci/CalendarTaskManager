@@ -29,7 +29,7 @@ export default function Register() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full max-w-md mx-auto">
+        <div className="w-full flex flex-col items-center justify-center h-full max-w-xl mx-auto">
             <h1 className="text-3xl font-bold mb-8 text-white">Registration</h1>
             
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
@@ -37,7 +37,6 @@ export default function Register() {
                     label="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose a username"
                 />
                 
                 <TextInput
@@ -45,7 +44,6 @@ export default function Register() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Choose a password"
                 />
 
                 <TextInput
@@ -53,7 +51,6 @@ export default function Register() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Enter your password again"
                 />
 
                 {error && (

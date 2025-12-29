@@ -23,7 +23,7 @@ export default function Login() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center h-full max-w-md mx-auto">
+        <div className="w-full flex flex-col items-center justify-center h-full max-w-xl mx-auto">
             <h1 className="text-3xl font-bold mb-8 text-white">Login</h1>
             
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
@@ -31,7 +31,6 @@ export default function Login() {
                     label="Username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your username"
                 />
                 
                 <TextInput
@@ -39,7 +38,6 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
                 />
 
                 {error && (
