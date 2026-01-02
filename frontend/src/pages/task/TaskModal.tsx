@@ -4,6 +4,7 @@ import type { TaskStatus } from '../../models/TaskStatus';
 import Modal from '../../components/Modal';
 import TextInput from '../../components/inputs/TextInput';
 import TextArea from '../../components/inputs/TextArea';
+import Checkbox from '../../components/inputs/Checkbox'; //
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
@@ -71,12 +72,24 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
             title={task ? 'Edit task' : 'New task'}
         >
             <form onSubmit={handleSubmit} className="space-y-5">
-                <TextInput 
-                    label="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                />
+                <div className="flex gap-4 items-center">
+                    <div className="flex-grow">
+                        <TextInput 
+                            label="Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                        />
+                    </div>
+
+                    <div className="pt-6 w-24">
+                        <Checkbox 
+                            label="Done" 
+                            checked={status === 'completed'} 
+                            onChange={(isChecked) => setStatus(isChecked ? 'completed' : 'pending')} 
+                        />
+                    </div>
+                </div>
 
                 <TextArea 
                     label="Description"
