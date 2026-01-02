@@ -5,5 +5,7 @@ export interface Task {
     title: string;
     description?: string;
     status: TaskStatus;
-    deadline?: string;
+    deadLine?: string;
+    duration?: number; // in minutes
+    startTime?: string;
 }

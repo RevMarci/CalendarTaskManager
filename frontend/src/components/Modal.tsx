@@ -24,7 +24,7 @@ export default function Modal({ isOpen, onClose, title, children }: ModalProps) 
             onClick={onClose}
         >
             <div 
-                className="bg-black border border-gray-800 rounded-lg w-full max-w-md p-6 shadow-2xl shadow-blue-900/10"
+                className="bg-black border border-gray-800 rounded-lg w-full max-w-3xl p-6 shadow-2xl shadow-blue-900/10"
                 onClick={(e) => e.stopPropagation()}
             >
                 <h2 className="text-xl font-bold text-white mb-6">

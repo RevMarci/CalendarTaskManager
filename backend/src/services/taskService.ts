@@ -13,7 +13,14 @@ export const getTaskById = async (id: string, userId: number) => {
     });
 };
 
-export const createTask = async (data: { title: string; description?: string; status?: 'pending' | 'completed' }, userId: number) => {
+export const createTask = async (data: {
+    title: string;
+    description?: string;
+    status?: 'pending' | 'completed';
+    deadLine?: Date;
+    duration?: number;
+    startTime?: Date
+}, userId: number) => {
     return await Task.create({
         ...data,
         userId

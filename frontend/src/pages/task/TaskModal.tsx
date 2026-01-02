@@ -7,6 +7,7 @@ import TextArea from '../../components/inputs/TextArea';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
+import Divider from '../../components/Divider';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -19,26 +20,40 @@ interface TaskModalProps {
 export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: TaskModalProps) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [deadline, setDeadline] = useState('');
+    const [deadLine, setDeadLine] = useState('');
+    const [duration, setDuration] = useState<string>('');
+    const [startTime, setStartTime] = useState('');
     const [status, setStatus] = useState<TaskStatus>('pending');
 
     useEffect(() => {
         if (task) {
             setTitle(task.title);
             setDescription(task.description || '');
-            setDeadline(task.deadline ? task.deadline.split('T')[0] : '');
+            setDeadLine(task.deadLine ? new Date(task.deadLine).toISOString().slice(0, 16) : '');
+            setStartTime(task.startTime ? new Date(task.startTime).toISOString().slice(0, 16) : '');
+            setDuration(task.duration ? task.duration.toString() : '');
             setStatus(task.status);
         } else {
             setTitle('');
             setDescription('');
-            setDeadline('');
+            setDeadLine('');
+            setStartTime('');
+            setDuration('');
             setStatus('pending');
         }
     }, [task, isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave({ ...task, title, description, deadline: deadline || undefined, status });
+        onSave({ 
+            ...task, 
+            title, 
+            description, 
+            deadLine: deadLine || undefined, 
+            startTime: startTime || undefined,
+            duration: duration ? parseInt(duration) : undefined,
+            status 
+        });
         onClose();
     };
 
@@ -70,13 +85,33 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
                     className="h-24"
                 />
 
-                <TextInput 
-                    label="Deadline"
-                    type="date"
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                    style={{ colorScheme: 'dark' }}
-                />
+                <Divider label="Timing & Schedule" />
+
+                <div className="grid grid-cols-3 gap-4">
+                    <TextInput 
+                        label="Deadline"
+                        type="datetime-local"
+                        value={deadLine}
+                        onChange={(e) => setDeadLine(e.target.value)}
+                        style={{ colorScheme: 'dark' }}
+                    />
+
+                    <TextInput 
+                        label="Start Time (auto set if left blank)"
+                        type="datetime-local"
+                        value={startTime}
+                        onChange={(e) => setStartTime(e.target.value)}
+                        style={{ colorScheme: 'dark' }}
+                    />
+
+                    <TextInput 
+                        label="Duration in minutes (default is 60)"
+                        type="number"
+                        value={duration}
+                        onChange={(e) => setDuration(e.target.value)}
+                        min="1"
+                    />
+                </div>
 
                 <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-900">
                     <div>

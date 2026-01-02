@@ -33,13 +33,13 @@ export default function TaskItem({ task, onToggleStatus, onEdit }: TaskItemProps
                 </div>
             </div>
 
-            {task.deadline && (
+            {task.deadLine && (
                 <span className={`text-xs px-2 py-1 rounded border ${
                     isCompleted 
                         ? 'border-gray-800 text-gray-600' 
                         : 'border-blue-900/30 text-blue-400 bg-blue-900/10'
                 }`}>
-                    {new Date(task.deadline).toLocaleDateString()}
+                    {new Date(task.deadLine).toLocaleDateString()}
                 </span>
             )}
         </div>

@@ -29,13 +29,13 @@ export const getTask = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
     try {
-        const { title, description, status } = req.body;
+        const { title, description, status, deadLine, duration, startTime } = req.body;
 
         if (!title) {
             return sendError(res, 'Title is required', 400);
         }
 
-        const task = await taskService.createTask({ title, description, status }, req.user!.id);
+        const task = await taskService.createTask({ title, description, status, deadLine, duration, startTime }, req.user!.id);
         sendSuccess(res, task, 'Task created successfully', 201);
     } catch (error) {
         console.error('Error in createTask:', error);

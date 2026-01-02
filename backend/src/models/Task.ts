@@ -7,6 +7,9 @@ interface TaskAttributes {
     description?: string;
     status: 'pending' | 'completed';
     userId: number;
+    deadLine?: Date;
+    duration?: number; // in minutes
+    startTime?: Date;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -19,6 +22,9 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
     public description!: string;
     public status!: 'pending' | 'completed';
     public userId!: number;
+    public deadLine!: Date;
+    public duration!: number;
+    public startTime!: Date;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -46,6 +52,18 @@ Task.init(
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        deadLine: {
+            type: DataTypes.DATE,
+            allowNull: true,
+        },
+        duration: {
+            type: DataTypes.INTEGER,    // minutes
+            allowNull: true,
+        },
+        startTime: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     },
     {
