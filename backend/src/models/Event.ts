@@ -8,6 +8,7 @@ interface EventAttributes {
     end?: Date;
     allDay: boolean;
     userId: number;
+
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -56,7 +57,7 @@ Event.init(
     },
     {
         sequelize,
-        tableName: 'events',
+        tableName: 'event',
         timestamps: true,
     }
 );

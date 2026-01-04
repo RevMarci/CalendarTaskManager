@@ -3,7 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 
-import taskRoutes from './routes/taskRoutes';
+import taskRoutes from './routes/task/taskRoutes';
+import taskBoardRoutes from './routes/task/taskBoardRoutes';
+import taskGroupRoutes from './routes/task/taskGroupRoutes';
 import eventRoutes from './routes/eventRoutes';
 import authRoutes from './routes/authRoutes';
 import sequelize from './config/database';
@@ -24,12 +26,14 @@ app.use(dateParserMiddleware);
 
 // Routes
 app.use('/api/tasks', taskRoutes);
+app.use('/api/task-boards', taskBoardRoutes);
+app.use('/api/task-groups', taskGroupRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
 
 const startServer = async (): Promise<void> => {
     try {
-        await sequelize.sync({ alter: true }); 
+        await sequelize.sync(); 
 
         console.log('Database connected and synced successfully.');
 

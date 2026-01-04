@@ -5,6 +5,7 @@ interface UserAttributes {
     id: number;
     username: string;
     password?: string;
+
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -42,7 +43,7 @@ User.init(
     },
     {
         sequelize,
-        tableName: 'users',
+        tableName: 'user',
         timestamps: true,
     }
 );
