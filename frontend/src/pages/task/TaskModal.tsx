@@ -46,13 +46,18 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+
+        const finalDuration = duration 
+            ? parseInt(duration) 
+            : (deadLine ? 60 : undefined);
+
         onSave({ 
             ...task, 
             title, 
             description, 
             deadLine: deadLine || undefined, 
             startTime: startTime || undefined,
-            duration: duration ? parseInt(duration) : undefined,
+            duration: finalDuration,
             status 
         });
         onClose();
