@@ -7,6 +7,7 @@ import Checkbox from '../../components/inputs/Checkbox';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
+import { toLocalISOString } from '../../utils/dateUtils';
 
 interface CalendarModalProps {
     isOpen: boolean;
@@ -37,14 +38,14 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
             if (event) {
                 setTitle(event.title);
                 setDescription(event.description || '');
-                setStart(formatDateForInput(event.start));
-                setEnd(formatDateForInput(event.end));
+                setStart(toLocalISOString(event.start));
+                setEnd(toLocalISOString(event.end));
                 setAllDay(event.allDay || false);
             } else if (initialDateRange) {
                 setTitle('');
                 setDescription('');
-                setStart(formatDateForInput(initialDateRange.start));
-                setEnd(formatDateForInput(initialDateRange.end));
+                setStart(toLocalISOString(initialDateRange.start));
+                setEnd(toLocalISOString(initialDateRange.end));
                 setAllDay(initialDateRange.allDay);
             } else {
                 const now = new Date();

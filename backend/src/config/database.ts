@@ -18,6 +18,7 @@ const sequelize = new Sequelize(dbName, dbUser, dbPassword || '', {
     host: dbHost,
     dialect: 'mysql',
     logging: false,
+    timezone: '+00:00',
 });
 
 export default sequelize;

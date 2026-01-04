@@ -4,11 +4,12 @@ import type { TaskStatus } from '../../models/TaskStatus';
 import Modal from '../../components/Modal';
 import TextInput from '../../components/inputs/TextInput';
 import TextArea from '../../components/inputs/TextArea';
-import Checkbox from '../../components/inputs/Checkbox'; //
+import Checkbox from '../../components/inputs/Checkbox';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
 import Divider from '../../components/Divider';
+import { toLocalISOString } from '../../utils/dateUtils';
 
 interface TaskModalProps {
     isOpen: boolean;
@@ -30,8 +31,8 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
         if (task) {
             setTitle(task.title);
             setDescription(task.description || '');
-            setDeadLine(task.deadLine ? new Date(task.deadLine).toISOString().slice(0, 16) : '');
-            setStartTime(task.startTime ? new Date(task.startTime).toISOString().slice(0, 16) : '');
+            setDeadLine(toLocalISOString(task.deadLine));
+            setStartTime(toLocalISOString(task.startTime));
             setDuration(task.duration ? task.duration.toString() : '');
             setStatus(task.status);
         } else {
