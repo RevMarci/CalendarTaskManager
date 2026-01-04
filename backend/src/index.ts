@@ -7,6 +7,7 @@ import taskRoutes from './routes/taskRoutes';
 import eventRoutes from './routes/eventRoutes';
 import authRoutes from './routes/authRoutes';
 import sequelize from './config/database';
+import { dateParserMiddleware } from './middleware/dateParserMiddleware';
 
 import './models'; 
 
@@ -17,6 +18,9 @@ const PORT: number = parseInt(process.env.PORT as string, 10) || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Middlewares
+app.use(dateParserMiddleware);
 
 // Routes
 app.use('/api/tasks', taskRoutes);
