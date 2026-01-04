@@ -28,6 +28,7 @@ export const createTask = async (data: {
     const shouldSchedule = schedulerService.shouldSchedule(
         data.deadLine,
         data.startTime,
+        data.duration,
         data.status
     );
 
@@ -74,6 +75,7 @@ export const updateTask = async (id: string, userId: number, data: any) => {
     const shouldSchedule = schedulerService.shouldSchedule(
         mergedData.deadLine,
         mergedData.startTime,
+        mergedData.duration,
         mergedData.status
     );
 

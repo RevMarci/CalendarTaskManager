@@ -25,14 +25,17 @@ class SchedulerService {
         return this.findGapInIntervals(busyIntervals, durationMinutes, now, deadline);
     }
 
-    public shouldSchedule(deadLine?: Date, startTime?: Date, status?: string): boolean {
+    public shouldSchedule(deadLine?: Date, startTime?: Date, duration?: number, status?: string): boolean {
         const now = new Date();
+        const endDate = startTime && duration 
+            ? new Date(startTime.getTime() + duration * 60000) 
+            : undefined;
 
         if (status === 'completed' || !deadLine) {
             return false;
         }
 
-        let schedule = deadLine > now && (!startTime || startTime < now);
+        let schedule = deadLine > now && (!endDate || endDate < now);
 
         return schedule;
     }
