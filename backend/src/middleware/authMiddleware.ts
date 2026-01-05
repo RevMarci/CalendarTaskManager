@@ -8,7 +8,7 @@ interface DecodedToken {
     exp: number;
 }
 
-export const protect = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export async function protect (req: Request, res: Response, next: NextFunction): Promise<void> {
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {

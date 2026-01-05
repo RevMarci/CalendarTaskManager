@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as groupService from '../../services/task/taskGroupService';
 import { sendSuccess, sendError } from '../../utils/response';
 
-export const getGroups = async (req: Request, res: Response): Promise<void> => {
+export async function getGroups (req: Request, res: Response): Promise<void> {
     try {
         const { taskBoardId } = req.params;
         const userId = req.user?.id;
@@ -19,7 +19,7 @@ export const getGroups = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getGroup = async (req: Request, res: Response): Promise<void> => {
+export async function getGroup (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const userId = req.user?.id;
@@ -40,7 +40,7 @@ export const getGroup = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const createGroup = async (req: Request, res: Response): Promise<void> => {
+export async function createGroup (req: Request, res: Response): Promise<void> {
     try {
         const { title, taskBoardId } = req.body;
         const userId = req.user?.id;
@@ -68,7 +68,7 @@ export const createGroup = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const updateGroup = async (req: Request, res: Response): Promise<void> => {
+export async function updateGroup (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const { title, position } = req.body;
@@ -94,7 +94,7 @@ export const updateGroup = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const deleteGroup = async (req: Request, res: Response): Promise<void> => {
+export async function deleteGroup (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const userId = req.user?.id;

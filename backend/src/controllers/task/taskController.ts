@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as taskService from '../../services/task/taskService';
 import { sendSuccess, sendError } from '../../utils/response';
 
-export const getTasks = async (req: Request, res: Response) => {
+export async function getTasks (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) return sendError(res, 'User not identified', 401);
@@ -15,7 +15,7 @@ export const getTasks = async (req: Request, res: Response) => {
     }
 };
 
-export const getTask = async (req: Request, res: Response) => {
+export async function getTask (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) return sendError(res, 'User not identified', 401);
@@ -33,7 +33,7 @@ export const getTask = async (req: Request, res: Response) => {
     }
 };
 
-export const createTask = async (req: Request, res: Response) => {
+export async function createTask (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) return sendError(res, 'User not identified', 401);
@@ -69,7 +69,7 @@ export const createTask = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteTask = async (req: Request, res: Response) => {
+export async function deleteTask (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) return sendError(res, 'User not identified', 401);
@@ -87,7 +87,7 @@ export const deleteTask = async (req: Request, res: Response) => {
     }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export async function updateTask (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         if (!userId) return sendError(res, 'User not identified', 401);

@@ -2,21 +2,21 @@ import TaskBoard from '../../models/task/TaskBoard';
 import TaskGroup from '../../models/task/TaskGroup';
 import Task from '../../models/task/Task';
 
-export const createTaskBoard = async (data: { title: string }, userId: number) => {
+export async function createTaskBoard (data: { title: string }, userId: number): Promise<TaskBoard> {
     return await TaskBoard.create({
         ...data,
         userId,
     });
 };
 
-export const getAllTaskBoards = async (userId: number) => {
+export async function getAllTaskBoards (userId: number): Promise<TaskBoard[]> {
     return await TaskBoard.findAll({
         where: { userId },
         order: [['createdAt', 'DESC']],
     });
 };
 
-export const getTaskBoardById = async (id: number, userId: number) => {
+export async function getTaskBoardById (id: number, userId: number): Promise<TaskBoard | null> {
     return await TaskBoard.findOne({
         where: { id, userId },
         include: [
@@ -34,7 +34,7 @@ export const getTaskBoardById = async (id: number, userId: number) => {
     });
 };
 
-export const updateTaskBoard = async (id: number, userId: number, data: Partial<TaskBoard>) => {
+export async function updateTaskBoard (id: number, userId: number, data: Partial<TaskBoard>): Promise<TaskBoard> {
     const board = await TaskBoard.findOne({ where: { id, userId } });
 
     if (!board) {
@@ -44,7 +44,7 @@ export const updateTaskBoard = async (id: number, userId: number, data: Partial<
     return await board.update(data);
 };
 
-export const deleteTaskBoard = async (id: number, userId: number) => {
+export async function deleteTaskBoard (id: number, userId: number): Promise<void> {
     const board = await TaskBoard.findOne({ where: { id, userId } });
 
     if (!board) {

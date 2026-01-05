@@ -3,7 +3,7 @@ import TaskGroup from '../../models/task/TaskGroup';
 import TaskBoard from '../../models/task/TaskBoard';
 import { schedulerService } from '../schedulerService';
 
-export const getAllTasks = async (userId: number) => {
+export async function getAllTasks (userId: number): Promise<Task[]> {
     return await Task.findAll({
         include: [{
             model: TaskGroup,
@@ -18,7 +18,7 @@ export const getAllTasks = async (userId: number) => {
     });
 };
 
-export const getTaskById = async (id: number, userId: number) => {
+export async function getTaskById (id: number, userId: number): Promise<Task | null> {
     return await Task.findOne({
         where: { id },
         include: [{
@@ -33,7 +33,7 @@ export const getTaskById = async (id: number, userId: number) => {
     });
 };
 
-export const createTask = async (data: {
+export async function createTask (data: {
     title: string;
     description?: string;
     status?: 'pending' | 'completed';
@@ -41,7 +41,7 @@ export const createTask = async (data: {
     deadLine?: Date;
     duration?: number;
     startTime?: Date
-}, userId: number) => {
+}, userId: number): Promise<Task> {
     
     const group = await TaskGroup.findOne({
         where: { id: data.taskGroupId },
@@ -93,7 +93,7 @@ export const createTask = async (data: {
     });
 };
 
-export const deleteTask = async (id: number, userId: number) => {
+export async function deleteTask (id: number, userId: number): Promise<boolean | null> {
     const task = await Task.findOne({
         where: { id },
         include: [{
@@ -113,7 +113,7 @@ export const deleteTask = async (id: number, userId: number) => {
     return true;
 };
 
-export const updateTask = async (id: number, userId: number, data: any) => {
+export async function updateTask (id: number, userId: number, data: any): Promise<Task | null> {
     const task = await Task.findOne({
         where: { id },
         include: [{

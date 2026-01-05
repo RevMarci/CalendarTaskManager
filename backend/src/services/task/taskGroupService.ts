@@ -6,7 +6,7 @@ interface CreateTaskGroupData {
     taskBoardId: number;
 }
 
-export const getTaskGroups = async (taskBoardId: number, userId: number) => {
+export async function getTaskGroups (taskBoardId: number, userId: number): Promise<TaskGroup[]> {
     const board = await TaskBoard.findOne({ 
         where: { id: taskBoardId, userId } 
     });
@@ -20,7 +20,7 @@ export const getTaskGroups = async (taskBoardId: number, userId: number) => {
     });
 };
 
-export const getTaskGroupById = async (id: number, userId: number) => {
+export async function getTaskGroupById (id: number, userId: number): Promise<TaskGroup | null> {
     const group = await TaskGroup.findOne({
         where: { id },
         include: [{
@@ -33,7 +33,7 @@ export const getTaskGroupById = async (id: number, userId: number) => {
     return group;
 };
 
-export const createTaskGroup = async (data: CreateTaskGroupData, userId: number) => {
+export async function createTaskGroup (data: CreateTaskGroupData, userId: number): Promise<TaskGroup> {
     const board = await TaskBoard.findOne({ 
         where: { id: data.taskBoardId, userId } 
     });
@@ -48,7 +48,7 @@ export const createTaskGroup = async (data: CreateTaskGroupData, userId: number)
     });
 };
 
-export const updateTaskGroup = async (id: number, userId: number, data: Partial<TaskGroup>) => {
+export async function updateTaskGroup (id: number, userId: number, data: Partial<TaskGroup>): Promise<TaskGroup> {
     const group = await TaskGroup.findOne({
         where: { id },
         include: [{
@@ -65,7 +65,7 @@ export const updateTaskGroup = async (id: number, userId: number, data: Partial<
     return await group.update(data);
 };
 
-export const deleteTaskGroup = async (id: number, userId: number) => {
+export async function deleteTaskGroup (id: number, userId: number): Promise<void> {
     const group = await TaskGroup.findOne({
         where: { id },
         include: [{

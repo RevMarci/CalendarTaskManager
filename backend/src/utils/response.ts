@@ -13,13 +13,13 @@ interface ApiError {
     error?: any;
 }
 
-export const sendSuccess = <T>(
+export function sendSuccess<T>(
     res: Response, 
     data: T, 
     message: string = 'Success', 
     statusCode: number = 200,
     meta?: any
-) => {
+): void {
     const response: ApiResponse<T> = {
         success: true,
         message,
@@ -33,12 +33,12 @@ export const sendSuccess = <T>(
     res.status(statusCode).json(response);
 };
 
-export const sendError = (
+export function sendError(
     res: Response, 
     message: string, 
     statusCode: number = 500, 
     error?: any
-) => {
+): void {
     const response: ApiError = {
         success: false,
         message,

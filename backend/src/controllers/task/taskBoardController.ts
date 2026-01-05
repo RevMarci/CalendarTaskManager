@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as boardService from '../../services/task/taskBoardService';
 import { sendSuccess, sendError } from '../../utils/response';
 
-export const createBoard = async (req: Request, res: Response): Promise<void> => {
+export async function createBoard (req: Request, res: Response): Promise<void> {
     try {
         const { title } = req.body;
         const userId = req.user?.id;
@@ -23,7 +23,7 @@ export const createBoard = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const getBoards = async (req: Request, res: Response): Promise<void> => {
+export async function getBoards (req: Request, res: Response): Promise<void> {
     try {
         const userId = req.user?.id;
         
@@ -39,7 +39,7 @@ export const getBoards = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getBoard = async (req: Request, res: Response): Promise<void> => {
+export async function getBoard (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const userId = req.user?.id;
@@ -60,7 +60,7 @@ export const getBoard = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const updateBoard = async (req: Request, res: Response): Promise<void> => {
+export async function updateBoard (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const { title } = req.body;
@@ -82,7 +82,7 @@ export const updateBoard = async (req: Request, res: Response): Promise<void> =>
     }
 };
 
-export const deleteBoard = async (req: Request, res: Response): Promise<void> => {
+export async function deleteBoard (req: Request, res: Response): Promise<void> {
     try {
         const { id } = req.params;
         const userId = req.user?.id;
