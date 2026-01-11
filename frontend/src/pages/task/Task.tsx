@@ -33,15 +33,17 @@ export default function Task({ task, onStatusChange, onClick }: TaskItemProps) {
             onClick={onClick}
             className="group cursor-pointer border border-gray-800 rounded-lg p-4 flex justify-between items-center bg-black hover:bg-gray-900/40 transition-colors h-16"
         >
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
                 <div className={`w-2 h-2 rounded-full flex-shrink-0 ${task.status === 'completed' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
                 
-                <span className={`text-gray-200 truncate ${task.status === 'completed' ? 'line-through text-gray-500' : ''}`}>
-                    <strong>{task.name}</strong>
+                <span className={`text-gray-200 truncate ${task.status === 'completed' ? 'line-through text-gray-500' : ''}`}
+                    title={task.title}
+                >
+                    <strong>{task.title}</strong>
                 </span>
             </div>
             
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0 ml-4">
                 <button 
                     onClick={handleStatusClick}
                     disabled={isUpdating}
