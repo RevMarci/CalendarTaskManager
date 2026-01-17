@@ -182,7 +182,7 @@ export default function BoardPage() {
             <div className="flex justify-between items-center mb-0 px-6 pt-6 pb-4 border-b border-gray-800">
                 <div className="flex items-center gap-4 w-full">
                     <button 
-                        onClick={() => navigate('/tasks')}
+                        onClick={() => navigate('/task')}
                         className="text-gray-500 hover:text-white transition-colors flex-shrink-0"
                     >
                         ← Back
