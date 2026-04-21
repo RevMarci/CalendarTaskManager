@@ -5,6 +5,7 @@ interface TaskGroupAttributes {
     id: number;
     title: string;
     taskBoardId: number;
+    position?: number;
 
     createdAt?: Date;
     updatedAt?: Date;
@@ -16,6 +17,7 @@ class TaskGroup extends Model<TaskGroupAttributes, TaskGroupCreationAttributes> 
     public id!: number;
     public title!: string;
     public taskBoardId!: number;
+    public position!: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -35,6 +37,11 @@ TaskGroup.init(
         taskBoardId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        position: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: 0,
         },
     },
     {

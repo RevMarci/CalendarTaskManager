@@ -5,7 +5,8 @@ export interface Task {
     title: string;
     description?: string;
     status: TaskStatus;
-    taskGroupId: Number;
+    taskGroupId: number;
+    position?: number;
     deadLine?: string;
     duration?: number; // in minutes
     startTime?: string;

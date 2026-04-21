@@ -16,7 +16,7 @@ export const taskGroupService = {
         return response.data;
     },
 
-    update: async (id: number, data: { title: string }) => {
+    update: async (id: number, data: { title?: string; position?: number }) => {
         const response = await apiClient<ApiResponse<TaskGroup>>(`/task-groups/${id}`, {
             method: 'PUT',
             body: data

@@ -7,6 +7,7 @@ import type { TaskGroup } from '../../models/TaskGroup';
 import type { TaskBoard } from '../../models/TaskBoard';
 import type { Task as TaskModel } from '../../models/Task';
 import type { TaskStatus } from '../../models/TaskStatus';
+import { DragDropContext, Droppable, type DropResult } from '@hello-pangea/dnd';
 import TaskGroupColumn from './TaskGroupColumn';
 import AddGroupColumn from './AddGroupColumn';
 import TaskModal from './TaskModal';
@@ -173,6 +174,78 @@ export default function BoardPage() {
         }
     };
 
+    const handleDragEnd = async (result: DropResult) => {
+        const { destination, source, draggableId, type } = result;
+
+        if (!destination) return;
+
+        if (type === 'group') {
+            if (destination.index === source.index) return;
+            
+            const sortedGroups = [...groups].sort((a, b) => (a.position || 0) - (b.position || 0));
+            const [movedGroup] = sortedGroups.splice(source.index, 1);
+            sortedGroups.splice(destination.index, 0, movedGroup);
+
+            sortedGroups.forEach((g, idx) => g.position = idx);
+            
+            setGroups(sortedGroups);
+
+            const groupId = Number(draggableId.replace('group-', ''));
+            try {
+                await taskGroupService.update(groupId, { position: destination.index });
+            } catch (error) {
+                console.error("Group drag failed", error);
+                alert("Failed to save column position.");
+                loadBoardData(Number(boardId));
+            }
+            return;
+        }
+
+        if (destination.droppableId === source.droppableId && destination.index === source.index) return;
+
+        const sourceGroupId = Number(source.droppableId);
+        const destGroupId = Number(destination.droppableId);
+        const taskId = Number(draggableId);
+
+        const newGroups = [...groups];
+        const sourceGroupIndex = newGroups.findIndex(g => g.id === sourceGroupId);
+        const destGroupIndex = newGroups.findIndex(g => g.id === destGroupId);
+
+        const sourceGroup = { ...newGroups[sourceGroupIndex] };
+        const destGroup = sourceGroupId === destGroupId ? sourceGroup : { ...newGroups[destGroupIndex] };
+
+        const sourceTasks = [...(sourceGroup.Tasks || [])].sort((a, b) => (a.position || 0) - (b.position || 0));
+        const destTasks = sourceGroupId === destGroupId ? sourceTasks : [...(destGroup.Tasks || [])].sort((a, b) => (a.position || 0) - (b.position || 0));
+
+        const [movedTask] = sourceTasks.splice(source.index, 1);
+        movedTask.taskGroupId = destGroupId;
+
+        destTasks.splice(destination.index, 0, movedTask);
+
+        sourceTasks.forEach((t, idx) => t.position = idx);
+        if (sourceGroupId !== destGroupId) {
+            destTasks.forEach((t, idx) => t.position = idx);
+        }
+
+        sourceGroup.Tasks = sourceTasks;
+        if (sourceGroupId !== destGroupId) destGroup.Tasks = destTasks;
+        newGroups[sourceGroupIndex] = sourceGroup;
+        if (sourceGroupId !== destGroupId) newGroups[destGroupIndex] = destGroup;
+
+        setGroups(newGroups);
+
+        try {
+            await taskService.update(taskId, {
+                taskGroupId: destGroupId,
+                position: destination.index
+            });
+        } catch (error) {
+            console.error("Drag update failed", error);
+            alert("Nem sikerült elmenteni a pozíciót.");
+            loadBoardData(Number(boardId));
+        }
+    };
+
     if (loading) return <div className="p-6 text-gray-400">Loading board...</div>;
     if (error) return <div className="p-6 text-red-400">Error: {error}</div>;
     if (!board) return <div className="p-6 text-gray-400">Board not found.</div>;
@@ -213,20 +286,33 @@ export default function BoardPage() {
             </div>
 
             <div className="flex-grow overflow-x-auto overflow-y-hidden">
-                <div className="h-full flex flex-row">                    
-                    {groups.map(group => (
-                        <TaskGroupColumn 
-                            key={group.id} 
-                            group={group} 
-                            onTaskStatusChange={handleTaskStatusChange}
-                            onTaskClick={handleTaskClick}
-                            onTitleChange={handleGroupTitleChange}
-                            onAddTask={handleAddTask}
-                        />
-                    ))}
-                    
-                    <AddGroupColumn onAdd={handleAddGroup} />
-                </div>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="board" type="group" direction="horizontal">
+                        {(provided) => (
+                            <div 
+                                className="h-full flex flex-row"
+                                ref={provided.innerRef}
+                                {...provided.droppableProps}
+                            >
+                                {[...groups].sort((a, b) => (a.position || 0) - (b.position || 0)).map((group, index) => (
+                                    <TaskGroupColumn 
+                                        key={group.id} 
+                                        index={index}
+                                        group={group} 
+                                        onTaskStatusChange={handleTaskStatusChange}
+                                        onTaskClick={handleTaskClick}
+                                        onTitleChange={handleGroupTitleChange}
+                                        onAddTask={handleAddTask}
+                                    />
+                                ))}
+                                
+                                {provided.placeholder}
+                                
+                                <AddGroupColumn onAdd={handleAddGroup} />
+                            </div>
+                        )}
+                    </Droppable>
+                </DragDropContext>
             </div>
 
             <TaskModal 
