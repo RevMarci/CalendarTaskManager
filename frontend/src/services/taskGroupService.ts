@@ -22,5 +22,13 @@ export const taskGroupService = {
             body: data
         });
         return response.data;
+    },
+
+    updatePositions: async (updates: { id: number; position: number }[]) => {
+        const response = await apiClient<ApiResponse<void>>('/task-groups/positions', {
+            method: 'PATCH',
+            body: updates
+        });
+        return response;
     }
 };

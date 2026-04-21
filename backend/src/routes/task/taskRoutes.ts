@@ -5,7 +5,8 @@ import {
     getTask, 
     createTask, 
     deleteTask, 
-    updateTask 
+    updateTask,
+    updatePositions
 } from '../../controllers/task/taskController';
 
 const router = express.Router();
@@ -17,5 +18,6 @@ router.get('/:id', getTask);
 router.post('/', createTask);
 router.delete('/:id', deleteTask);
 router.put('/:id', updateTask);
+router.patch('/positions', updatePositions);
 
 export default router;

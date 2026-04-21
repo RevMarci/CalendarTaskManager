@@ -108,3 +108,16 @@ export async function updateTask (req: Request, res: Response): Promise<void> {
         sendError(res, 'Error updating task', 500, err);
     }
 };
+
+export async function updatePositions (req: Request, res: Response): Promise<void> {
+    try {
+        const userId = req.user?.id;
+        if (!userId) return sendError(res, 'User not identified', 401);
+
+        await taskService.updateTaskPositions(req.body, userId);
+        sendSuccess(res, null, 'Task positions updated successfully');
+    } catch (error) {
+        console.error('Error in updatePositions:', error);
+        sendError(res, 'Error updating task positions', 500, error as Error);
+    }
+};

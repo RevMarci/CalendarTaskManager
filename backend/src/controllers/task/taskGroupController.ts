@@ -114,3 +114,16 @@ export async function deleteGroup (req: Request, res: Response): Promise<void> {
         return sendError(res, 'Failed to delete task group', 500, error as Error);
     }
 };
+
+export async function updatePositions (req: Request, res: Response): Promise<void> {
+    try {
+        const userId = req.user?.id;
+        if (!userId) return sendError(res, 'User not identified', 401);
+
+        await groupService.updateTaskGroupPositions(req.body, userId);
+        sendSuccess(res, null, 'Group positions updated successfully');
+    } catch (error) {
+        console.error('Error in updatePositions:', error);
+        sendError(res, 'Error updating group positions', 500, error as Error);
+    }
+};

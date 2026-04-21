@@ -79,11 +79,11 @@ export default function TaskGroupColumn({ group, index, onTaskStatusChange, onTa
                         </span>
                     </div>
 
-                    <div className="flex-grow p-3 overflow-y-auto custom-scrollbar flex flex-col gap-3">
+                    <div className="flex-grow p-3 overflow-y-auto custom-scrollbar">
                         <Droppable droppableId={group.id.toString()}>
                             {(droppableProvided) => (
                                 <ul 
-                                    className="space-y-3 min-h-[50px]"
+                                    className="space-y-3 min-h-full pb-2" 
                                     {...droppableProvided.droppableProps}
                                     ref={droppableProvided.innerRef}
                                 >
@@ -100,7 +100,9 @@ export default function TaskGroupColumn({ group, index, onTaskStatusChange, onTa
                                 </ul>
                             )}
                         </Droppable>
+                    </div>
 
+                    <div className="p-3 border-t border-gray-800 bg-black/10 mt-auto flex-shrink-0">
                         <button 
                             onClick={() => onAddTask(group.id)}
                             className="w-full py-2 border border-dashed border-gray-700 rounded-lg text-gray-500 hover:text-white hover:border-gray-500 hover:bg-gray-800 transition-all text-sm flex items-center justify-center gap-2"

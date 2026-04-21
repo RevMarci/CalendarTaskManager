@@ -6,7 +6,8 @@ import {
     getGroup,
     createGroup,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    updatePositions
 } from '../../controllers/task/taskGroupController';
 
 const router = express.Router();
@@ -18,5 +19,6 @@ router.get('/:id', getGroup);
 router.post('/', createGroup);
 router.put('/:id', updateGroup);
 router.delete('/:id', deleteGroup);
+router.patch('/positions', updatePositions);
 
 export default router;

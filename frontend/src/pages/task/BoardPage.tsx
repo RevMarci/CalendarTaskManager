@@ -192,7 +192,8 @@ export default function BoardPage() {
 
             const groupId = Number(draggableId.replace('group-', ''));
             try {
-                await taskGroupService.update(groupId, { position: destination.index });
+                const groupUpdates = sortedGroups.map(g => ({ id: g.id, position: g.position! }));
+                await taskGroupService.updatePositions(groupUpdates);
             } catch (error) {
                 console.error("Group drag failed", error);
                 alert("Failed to save column position.");
@@ -235,10 +236,18 @@ export default function BoardPage() {
         setGroups(newGroups);
 
         try {
-            await taskService.update(taskId, {
-                taskGroupId: destGroupId,
-                position: destination.index
-            });
+            const allAffectedTasks = [...sourceTasks];
+            if (sourceGroupId !== destGroupId) {
+                allAffectedTasks.push(...destTasks);
+            }
+
+            const taskUpdates = allAffectedTasks.map(t => ({ 
+                id: t.id, 
+                position: t.position!, 
+                taskGroupId: t.taskGroupId as number 
+            }));
+
+            await taskService.updatePositions(taskUpdates);
         } catch (error) {
             console.error("Drag update failed", error);
             alert("Nem sikerült elmenteni a pozíciót.");
@@ -251,7 +260,7 @@ export default function BoardPage() {
     if (!board) return <div className="p-6 text-gray-400">Board not found.</div>;
 
     return (
-        <div className="h-[calc(100vh-64px)] flex flex-col -mt-8">
+        <div className="h-[calc(100vh-8px)] flex flex-col -mt-8 -mb-8">
             <div className="flex justify-between items-center mb-0 px-6 pt-6 pb-4 border-b border-gray-800">
                 <div className="flex items-center gap-4 w-full">
                     <button 

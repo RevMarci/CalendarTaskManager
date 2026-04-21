@@ -2,6 +2,7 @@ import Task from '../../models/task/Task';
 import TaskGroup from '../../models/task/TaskGroup';
 import TaskBoard from '../../models/task/TaskBoard';
 import { schedulerService } from '../schedulerService';
+import sequelize from '../../config/database';
 
 export async function getAllTasks (userId: number): Promise<Task[]> {
     return await Task.findAll({
@@ -179,4 +180,20 @@ export async function updateTask (id: number, userId: number, data: any): Promis
         startTime: mergedData.startTime,
         position: mergedData.position
     });
+};
+
+export async function updateTaskPositions(updates: { id: number; position: number; taskGroupId: number }[], userId: number): Promise<void> {
+    const transaction = await sequelize.transaction();
+    try {
+        for (const update of updates) {
+            await Task.update(
+                { position: update.position, taskGroupId: update.taskGroupId },
+                { where: { id: update.id }, transaction }
+            );
+        }
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
 };

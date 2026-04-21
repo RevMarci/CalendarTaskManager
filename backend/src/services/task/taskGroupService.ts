@@ -1,5 +1,6 @@
 import TaskGroup from '../../models/task/TaskGroup';
 import TaskBoard from '../../models/task/TaskBoard';
+import sequelize from '../../config/database';
 
 interface CreateTaskGroupData {
     title: string;
@@ -80,4 +81,20 @@ export async function deleteTaskGroup (id: number, userId: number): Promise<void
     }
 
     return await group.destroy();
+};
+
+export async function updateTaskGroupPositions(updates: { id: number; position: number }[], userId: number): Promise<void> {
+    const transaction = await sequelize.transaction();
+    try {
+        for (const update of updates) {
+            await TaskGroup.update(
+                { position: update.position },
+                { where: { id: update.id }, transaction }
+            );
+        }
+        await transaction.commit();
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
 };
