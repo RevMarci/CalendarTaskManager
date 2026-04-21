@@ -6,6 +6,18 @@ interface BoardItemProps {
 }
 
 export default function BoardItem({ board, onClick }: BoardItemProps) {
+    let totalTasks = 0;
+    let completedTasks = 0;
+
+    if (board.TaskGroups) {
+        board.TaskGroups.forEach(group => {
+            if (group.Tasks) {
+                totalTasks += group.Tasks.length;
+                completedTasks += group.Tasks.filter(task => task.status === 'completed').length;
+            }
+        });
+    }
+
     return (
         <div 
             className="w-64 h-24 p-5 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors cursor-pointer group flex flex-col justify-between"
@@ -15,8 +27,9 @@ export default function BoardItem({ board, onClick }: BoardItemProps) {
                 <p className="text-md text-white font-bold mb-1 line-clamp-1 h-6 leading-6 overflow-hidden text-ellipsis" title={board.title}>
                     {board.title}
                 </p>
-                {/* TODO: more info such as task count */}
-                <p className="text-gray-400 text-sm">More info here</p>
+                <p className="text-gray-400 text-sm">
+                    {`${completedTasks}/${totalTasks}`}
+                </p>
             </div>
         </div>
     );

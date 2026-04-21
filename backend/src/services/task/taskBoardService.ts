@@ -13,6 +13,18 @@ export async function getAllTaskBoards (userId: number): Promise<TaskBoard[]> {
     return await TaskBoard.findAll({
         where: { userId },
         order: [['createdAt', 'DESC']],
+        include: [
+            {
+                model: TaskGroup,
+                required: false,
+                include: [
+                    {
+                        model: Task,
+                        required: false,
+                    }
+                ]
+            },
+        ],
     });
 };
 

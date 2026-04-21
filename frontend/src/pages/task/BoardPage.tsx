@@ -213,13 +213,7 @@ export default function BoardPage() {
             </div>
 
             <div className="flex-grow overflow-x-auto overflow-y-hidden">
-                <div className="h-full flex flex-row">
-                    {groups.length === 0 && (
-                        <div className="p-6 text-gray-500 italic absolute">
-                            This board has no columns yet.
-                        </div>
-                    )}
-                    
+                <div className="h-full flex flex-row">                    
                     {groups.map(group => (
                         <TaskGroupColumn 
                             key={group.id} 
