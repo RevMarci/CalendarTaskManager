@@ -1,15 +1,17 @@
 import { DataTypes, Model, Optional } from 'sequelize';
-import sequelize from '../config/database';
+import sequelize from '../../config/database';
 
 interface TaskAttributes {
     id: number;
     title: string;
     description?: string;
     status: 'pending' | 'completed';
-    userId: number;
+    taskGroupId: number;
+    position?: number;
     deadLine?: Date;
     duration?: number; // in minutes
     startTime?: Date;
+
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -21,7 +23,8 @@ class Task extends Model<TaskAttributes, TaskCreationAttributes> implements Task
     public title!: string;
     public description!: string;
     public status!: 'pending' | 'completed';
-    public userId!: number;
+    public taskGroupId!: number;
+    public position!: number;
     public deadLine!: Date;
     public duration!: number;
     public startTime!: Date;
@@ -49,16 +52,20 @@ Task.init(
             type: DataTypes.ENUM('pending', 'completed'),
             defaultValue: 'pending',
         },
-        userId: {
+        taskGroupId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        position: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
         },
         deadLine: {
             type: DataTypes.DATE,
             allowNull: true,
         },
         duration: {
-            type: DataTypes.INTEGER,    // minutes
+            type: DataTypes.INTEGER,
             allowNull: true,
         },
         startTime: {

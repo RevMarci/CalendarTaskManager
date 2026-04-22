@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { sendSuccess, sendError } from '../utils/response';
 
-const generateToken = (id: number): string => {
+function generateToken(id: number): string {
     return jwt.sign({ id }, process.env.JWT_SECRET as string, {
         expiresIn: '30d',
     });
 };
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export async function registerUser (req: Request, res: Response): Promise<void> {
     try {
         const { username, password } = req.body;
 
@@ -47,7 +47,7 @@ export const registerUser = async (req: Request, res: Response): Promise<void> =
     }
 };
 
-export const loginUser = async (req: Request, res: Response): Promise<void> => {
+export async function loginUser (req: Request, res: Response): Promise<void> {
     try {
         const { username, password } = req.body;
 
@@ -68,7 +68,7 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export const getMe = async (req: Request, res: Response): Promise<void> => {
+export async function getMe (req: Request, res: Response): Promise<void> {
     if (req.user) {
         sendSuccess(res, {
             id: req.user.id,

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import * as eventService from '../services/eventService';
 import { sendSuccess, sendError } from '../utils/response';
 
-export const getEvents = async (req: Request, res: Response) => {
+export async function getEvents (req: Request, res: Response): Promise<void> {
     try {
         const events = await eventService.getAllEvents(req.user!.id);
         sendSuccess(res, events, 'Events fetched successfully');
@@ -12,7 +12,7 @@ export const getEvents = async (req: Request, res: Response) => {
     }
 };
 
-export const getEvent = async (req: Request, res: Response) => {
+export async function getEvent (req: Request, res: Response): Promise<void> {
     try {
         const event = await eventService.getEventById(req.params.id, req.user!.id);
 
@@ -27,7 +27,7 @@ export const getEvent = async (req: Request, res: Response) => {
     }
 };
 
-export const createEvent = async (req: Request, res: Response) => {
+export async function createEvent (req: Request, res: Response): Promise<void> {
     try {
         const { title, start, end, allDay } = req.body;
 
@@ -43,7 +43,7 @@ export const createEvent = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteEvent = async (req: Request, res: Response) => {
+export async function deleteEvent (req: Request, res: Response): Promise<void> {
     try {
         const result = await eventService.deleteEvent(req.params.id, req.user!.id);
 
@@ -58,7 +58,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
     }
 };
 
-export const updateEvent = async (req: Request, res: Response) => {
+export async function updateEvent (req: Request, res: Response): Promise<void> {
     try {
         const updatedEvent = await eventService.updateEvent(req.params.id, req.user!.id, req.body);
 

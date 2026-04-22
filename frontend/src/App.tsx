@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import TaskPage from './pages/task/TaskPage';
+import BoardPage from './pages/task/BoardPage';
 import Calendar from './pages/calendar/Calendar';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -13,8 +14,9 @@ function App() {
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 
                 <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} /> {/* Új route */}
+                <Route path="/register" element={<Register />} />
                 <Route path="/task" element={<TaskPage />} />
+                <Route path="/board/:boardId" element={<BoardPage />} />
                 <Route path="/calendar" element={<Calendar />} />
             </Routes>
         </Layout>

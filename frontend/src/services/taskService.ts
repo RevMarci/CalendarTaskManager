@@ -36,5 +36,13 @@ export const taskService = {
         return await apiClient<void>(`/tasks/${id}`, {
             method: 'DELETE'
         });
+    },
+
+    updatePositions: async (updates: { id: number; position: number; taskGroupId: number }[]) => {
+        const response = await apiClient<ApiResponse<void>>('/tasks/positions', {
+            method: 'PATCH',
+            body: updates
+        });
+        return response;
     }
 };

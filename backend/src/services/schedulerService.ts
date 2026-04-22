@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import { Task, Event } from '../models';
+import { Task, Event, TaskGroup, TaskBoard } from '../models';
 
 interface TimeInterval {
     start: Date;
@@ -42,47 +42,66 @@ class SchedulerService {
 
     private async getBusyIntervals(userId: number, start: Date, end: Date): Promise<TimeInterval[]> {
         const events = await this.fetchEvents(userId, start, end);
-        const tasks = await this.fetchScheduledTasks(userId, start, end);
+        const tasks = await this.fetchTasks(userId, start, end);
 
-        const intervals = this.mergeIntervals(events, tasks);
-        return intervals.sort((a, b) => a.start.getTime() - b.start.getTime());
+        const allIntervals = [...events, ...tasks].sort((a, b) => a.start.getTime() - b.start.getTime());
+        
+        return this.mergeIntervals(allIntervals);
     }
 
-    private async fetchEvents(userId: number, start: Date, end: Date): Promise<Event[]> {
-        return await Event.findAll({
+    private async fetchEvents(userId: number, start: Date, end: Date): Promise<TimeInterval[]> {
+        const events = await Event.findAll({
             where: {
                 userId,
                 start: { [Op.lt]: end },
                 end: { [Op.gt]: start }
             }
         });
+
+        return events.map(e => ({ start: e.start, end: e.end }));
     }
 
-    private async fetchScheduledTasks(userId: number, start: Date, end: Date): Promise<Task[]> {
-        return await Task.findAll({
+    private async fetchTasks(userId: number, start: Date, end: Date): Promise<TimeInterval[]> {
+        const tasks = await Task.findAll({
             where: {
-                userId,
-                startTime: { 
-                    [Op.gt]: start,
-                    [Op.lt]: end
-                }
-            }
+                startTime: { [Op.ne]: null as any }
+            },
+            include: [{
+                model: TaskGroup,
+                required: true,
+                include: [{
+                    model: TaskBoard,
+                    required: true,
+                    where: { userId }
+                }]
+            }]
         });
+
+        const intervals = tasks.map(t => ({
+            start: t.startTime!,
+            end: new Date(new Date(t.startTime!).getTime() + (t.duration! * 60000))
+        }));
+
+        return intervals.filter(i => i.start < end && i.end > start);
     }
 
-    private mergeIntervals(events: Event[], tasks: Task[]): TimeInterval[] {
-        const intervals: TimeInterval[] = [
-            ...events.map(e => ({ 
-                start: new Date(e.start), 
-                end: new Date(e.end || e.start) 
-            })),
-            ...tasks.map(t => ({ 
-                start: new Date(t.startTime!), 
-                end: new Date(new Date(t.startTime!).getTime() + (t.duration! * 60000)) 
-            }))
-        ];
+    private mergeIntervals(intervals: TimeInterval[]): TimeInterval[] {
+        if (intervals.length === 0) return [];
 
-        return intervals;
+        const merged: TimeInterval[] = [intervals[0]];
+
+        for (let i = 1; i < intervals.length; i++) {
+            const current = intervals[i];
+            const last = merged[merged.length - 1];
+
+            if (current.start <= last.end) {
+                last.end = new Date(Math.max(last.end.getTime(), current.end.getTime()));
+            } else {
+                merged.push(current);
+            }
+        }
+
+        return merged;
     }
 
     private roundToNextQuarter(date: Date): Date {
@@ -108,6 +127,11 @@ class SchedulerService {
         const durationMs = durationMinutes * 60000;
 
         for (const interval of intervals) {
+            if (currentPointer >= interval.start && currentPointer < interval.end) {
+                currentPointer = interval.end;
+                continue;
+            }
+
             const gapSize = interval.start.getTime() - currentPointer.getTime();
             
             if (gapSize >= durationMs) {

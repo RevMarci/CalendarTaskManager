@@ -1,18 +1,18 @@
 import { Event } from '../models';
 
-export const getAllEvents = async (userId: number) => {
+export async function getAllEvents (userId: number): Promise<Event[]> {
     return await Event.findAll({
         where: { userId }
     });
 };
 
-export const getEventById = async (id: string, userId: number) => {
+export async function getEventById (id: string, userId: number): Promise<Event | null> {
     return await Event.findOne({
         where: { id, userId }
     });
 };
 
-export const createEvent = async (data: { title: string; start: Date; end?: Date; allDay?: boolean }, userId: number) => {
+export async function createEvent (data: { title: string; start: Date; end?: Date; allDay?: boolean }, userId: number): Promise<Event> {
     return await Event.create({
         ...data,
         allDay: data.allDay || false,
@@ -20,7 +20,7 @@ export const createEvent = async (data: { title: string; start: Date; end?: Date
     });
 };
 
-export const deleteEvent = async (id: string, userId: number) => {
+export async function deleteEvent (id: string, userId: number): Promise<boolean | null> {
     const event = await Event.findOne({ where: { id, userId } });
     if (!event) return null;
     
@@ -28,7 +28,7 @@ export const deleteEvent = async (id: string, userId: number) => {
     return true;
 };
 
-export const updateEvent = async (id: string, userId: number, data: any) => {
+export async function updateEvent (id: string, userId: number, data: any): Promise<Event | null> {
     const event = await Event.findOne({ where: { id, userId } });
     if (!event) return null;
 
