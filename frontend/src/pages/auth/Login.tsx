@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import TextInput from '../../components/inputs/TextInput';
 import SaveButton from '../../components/buttons/SaveButton';
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
     const [username, setUsername] = useState('');
@@ -52,6 +53,29 @@ export default function Login() {
                         Login
                         </SaveButton>
                     </div>
+
+                    <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-gray-300 after:mt-0.5 after:flex-1 after:border-t after:border-gray-300">
+                        <p className="mx-4 mb-0 text-center font-semibold text-gray-500">Or</p>
+                    </div>
+                    
+                    <GoogleLogin
+                        onSuccess={async (credentialResponse) => {
+                            try {
+                                if (credentialResponse.credential) {
+                                    await authService.loginWithGoogle(credentialResponse.credential);
+                                    navigate('/task');
+                                }
+                            } catch (err: any) {
+                                setError(err.message || 'Error during Google login');
+                            }
+                        }}
+                        onError={() => {
+                            setError('Error during Google login');
+                        }}
+                        theme="outline" 
+                        text="signin_with"
+                        width="100%"
+                    />
 
                     <div className="text-center text-sm text-gray-500">
                         Don't have an account yet?{' '}

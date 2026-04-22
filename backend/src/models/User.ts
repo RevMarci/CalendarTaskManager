@@ -5,6 +5,8 @@ interface UserAttributes {
     id: number;
     username: string;
     password?: string;
+    email?: string;
+    googleId?: string;
 
     createdAt?: Date;
     updatedAt?: Date;
@@ -15,7 +17,9 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public id!: number;
     public username!: string;
-    public password!: string;
+    public password?: string;
+    public email?: string;
+    public googleId?: string;
     
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -38,7 +42,17 @@ User.init(
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false,
+            allowNull: true,
+        },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: true,
+        },
+        googleId: {
+            type: DataTypes.STRING,
+            allowNull: true,
+            unique: true,
         },
     },
     {

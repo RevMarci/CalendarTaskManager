@@ -50,6 +50,22 @@ export const authService = {
         return authData;
     },
 
+    loginWithGoogle: async (credential: string) => {
+        const response = await apiClient<ApiResponse<AuthData>>('/auth/google', {
+            method: 'POST',
+            body: { credential }
+        });
+        
+        const authData = response.data;
+
+        if (authData?.token) {
+            localStorage.setItem('token', authData.token);
+            localStorage.setItem('user', JSON.stringify({ id: authData.id, username: authData.username }));
+        }
+        
+        return authData;
+    },
+
     logout: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
