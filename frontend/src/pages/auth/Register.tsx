@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import TextInput from '../../components/inputs/TextInput';
 import SaveButton from '../../components/buttons/SaveButton';
+import Divider from '../../components/Divider';
+import GoogleAuthButton from '../../components/buttons/GoogleAuthButton';
 
 export default function Register() {
     const [username, setUsername] = useState('');
@@ -62,9 +64,16 @@ export default function Register() {
                 <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center">
                         <SaveButton type="submit">
-                            Registration
+                            Register
                         </SaveButton>
                     </div>
+
+                    <Divider label="Or" align="center" className="my-4" />
+    
+                    <GoogleAuthButton 
+                        text="signup_with" 
+                        onError={(msg) => setError(msg)} 
+                    />
                     
                     <div className="text-center text-sm text-gray-500">
                         Already have an account?{' '}
