@@ -36,15 +36,6 @@ export default function ProfilePage() {
             <div className="max-w-xl">
                 <div className="mb-8">
                     <label className="block text-sm font-medium text-gray-500 mb-1">
-                        Username
-                    </label>
-                    <div className="text-xl text-gray-200 font-semibold">
-                        {profile.username}
-                    </div>
-                </div>
-
-                <div className="mb-8">
-                    <label className="block text-sm font-medium text-gray-500 mb-1">
                         Email Address
                     </label>
                     <div className="text-xl text-gray-200 font-semibold">

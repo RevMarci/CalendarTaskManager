@@ -15,13 +15,13 @@ function generateToken(id: number): string {
 
 export async function registerUser (req: Request, res: Response): Promise<void> {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!username || !password) {
+        if (!email || !password) {
             return sendError(res, 'Please add all fields', 400);
         }
 
-        const userExists = await User.findOne({ where: { username } });
+        const userExists = await User.findOne({ where: { email } });
 
         if (userExists) {
             return sendError(res, 'User already exists', 400);
@@ -31,14 +31,14 @@ export async function registerUser (req: Request, res: Response): Promise<void> 
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = await User.create({
-            username,
+            email,
             password: hashedPassword,
         });
 
         if (user) {
             sendSuccess(res, {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 token: generateToken(user.id),
             }, 'User registered successfully', 201);
         } else {
@@ -52,9 +52,9 @@ export async function registerUser (req: Request, res: Response): Promise<void> 
 
 export async function loginUser(req: Request, res: Response): Promise<void> {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { email } });
 
         if (!user) {
             return sendError(res, 'Invalid credentials', 401);
@@ -69,7 +69,7 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
         if (isMatch) {
             sendSuccess(res, {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 token: generateToken(user.id),
             }, 'Login successful');
         } else {
@@ -101,12 +101,16 @@ export async function googleLogin(req: Request, res: Response): Promise<void> {
             return sendError(res, 'Invalid Google token', 400);
         }
 
-        const { sub: googleId, email, name } = payload;
+        const { sub: googleId, email } = payload;
+
+        if (!email) {
+            return sendError(res, 'Google account must have an email', 400);
+        }
 
         // 3. Validate user in our database by Google ID or email
         let user = await User.findOne({ where: { googleId } });
 
-        if (!user && email) {
+        if (!user) {
             user = await User.findOne({ where: { email } });
             if (user) {
                 user.googleId = googleId;
@@ -117,7 +121,6 @@ export async function googleLogin(req: Request, res: Response): Promise<void> {
         // 4. Create user if doesn't exist
         if (!user) {
             user = await User.create({
-                username: name || (email ? email.split('@')[0] : 'GoogleUser'),
                 email: email,
                 googleId: googleId,
             });
@@ -126,7 +129,7 @@ export async function googleLogin(req: Request, res: Response): Promise<void> {
         // 5. Generate JWT
         sendSuccess(res, {
             id: user.id,
-            username: user.username,
+            email: user.email,
             token: generateToken(user.id),
         }, 'Google login successful', 200);
 

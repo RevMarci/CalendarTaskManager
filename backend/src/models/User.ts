@@ -3,9 +3,8 @@ import sequelize from '../config/database';
 
 interface UserAttributes {
     id: number;
-    username: string;
     password?: string;
-    email?: string;
+    email: string;
     googleId?: string;
 
     createdAt?: Date;
@@ -16,9 +15,8 @@ interface UserCreationAttributes extends Optional<UserAttributes, 'id'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
     public id!: number;
-    public username!: string;
     public password?: string;
-    public email?: string;
+    public email!: string;
     public googleId?: string;
     
     public readonly createdAt!: Date;
@@ -32,22 +30,17 @@ User.init(
             autoIncrement: true,
             primaryKey: true,
         },
-        username: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
-            validate: {
-                len: [3, 50],
-            },
-        },
         password: {
             type: DataTypes.STRING,
             allowNull: true,
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: true,
+            allowNull: false,
             unique: true,
+            validate: {
+                isEmail: true,
+            },
         },
         googleId: {
             type: DataTypes.STRING,

@@ -6,7 +6,6 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
         if (req.user) {
             sendSuccess(res, {
                 id: req.user.id,
-                username: req.user.username,
                 email: req.user.email,
             }, 'User profile retrieved successfully');
         } else {

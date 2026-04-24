@@ -7,7 +7,7 @@ import Divider from '../../components/Divider';
 import GoogleAuthButton from '../../components/buttons/GoogleAuthButton';
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function Login() {
         setError('');
 
         try {
-            await authService.login({ username, password });
+            await authService.login({ email, password });
             navigate('/task');
         } catch (err: any) {
             setError(err.message || 'Error during login');
@@ -30,9 +30,10 @@ export default function Login() {
             
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
                 <TextInput
-                    label="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    label="Email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 
                 <TextInput

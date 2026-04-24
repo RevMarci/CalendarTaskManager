@@ -2,8 +2,7 @@ import { apiClient } from "../api/apiClient";
 
 export interface UserProfile {
     id: number;
-    username: string;
-    email?: string;
+    email: string;
 }
 
 interface ApiResponse<T> {
