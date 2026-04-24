@@ -4,6 +4,13 @@ export interface UserProfile {
     id: number;
     email: string;
     hasGoogleId: boolean;
+    hasPassword: boolean; 
+}
+
+export interface ChangePasswordData {
+    oldPassword?: string;
+    newPassword: string;
+    confirmPassword: string;
 }
 
 interface ApiResponse<T> {
@@ -19,5 +26,12 @@ export const userService = {
         });
         
         return response.data;
+    },
+
+    changePassword: async (data: ChangePasswordData): Promise<void> => {
+        await apiClient<ApiResponse<null>>('/users/password', {
+            method: 'PATCH',
+            body: data
+        });
     }
 };
