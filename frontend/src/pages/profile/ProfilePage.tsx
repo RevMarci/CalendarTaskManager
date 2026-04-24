@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { userService, type UserProfile } from '../../services/userService';
+import { authService } from '../../services/authService';
+import DeleteButton from '../../components/buttons/DeleteButton';
+import GoogleAuthButton from '../../components/buttons/GoogleAuthButton';
 
 export default function ProfilePage() {
+    const navigate = useNavigate();
+
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const handleLogout = () => {
+        authService.logout();
+        navigate('/login');
+    };
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -39,9 +50,29 @@ export default function ProfilePage() {
                         Email Address
                     </label>
                     <div className="text-xl text-gray-200 font-semibold">
-                        {profile.email || <span className="text-gray-600 italic font-normal">No email provided</span>}
+                        {profile.email}
                     </div>
+
+                    {profile.hasGoogleId ? (
+                        <div className="flex items-center text-green-400 mt-4">
+                            <span className="mr-2">●</span>
+                            <span className="text-gray-300">Google account connected</span>
+                        </div>
+                    ) : (
+                        <div>
+                            <p className="text-sm text-gray-400 mb-4 mt-6">
+                                Connect your Google account to enable one-click login.
+                            </p>
+                            <GoogleAuthButton text='signin'/>
+                        </div>
+                    )}
                 </div>
+            </div>
+
+            <div className="mt-8 pt-6 border-t border-gray-800">
+                <DeleteButton onClick={handleLogout}>
+                    Log Out
+                </DeleteButton>
             </div>
         </div>
     );

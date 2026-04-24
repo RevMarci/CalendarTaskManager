@@ -3,6 +3,7 @@ import { apiClient } from "../api/apiClient";
 export interface UserProfile {
     id: number;
     email: string;
+    hasGoogleId: boolean;
 }
 
 interface ApiResponse<T> {

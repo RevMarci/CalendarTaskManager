@@ -7,6 +7,7 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
             sendSuccess(res, {
                 id: req.user.id,
                 email: req.user.email,
+                hasGoogleId: !!req.user.googleId, 
             }, 'User profile retrieved successfully');
         } else {
             sendError(res, 'User not found', 404);
