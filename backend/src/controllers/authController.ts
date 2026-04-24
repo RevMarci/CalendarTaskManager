@@ -81,17 +81,6 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
     }
 };
 
-export async function getMe (req: Request, res: Response): Promise<void> {
-    if (req.user) {
-        sendSuccess(res, {
-            id: req.user.id,
-            username: req.user.username,
-        });
-    } else {
-         sendError(res, 'User not found', 404);
-    }
-};
-
 export async function googleLogin(req: Request, res: Response): Promise<void> {
     try {
         const { credential } = req.body;

@@ -8,6 +8,8 @@ import taskBoardRoutes from './routes/task/taskBoardRoutes';
 import taskGroupRoutes from './routes/task/taskGroupRoutes';
 import eventRoutes from './routes/eventRoutes';
 import authRoutes from './routes/authRoutes';
+import userRoutes from './routes/userRoutes';
+
 import sequelize from './config/database';
 import { dateParserMiddleware } from './middleware/dateParserMiddleware';
 
@@ -30,6 +32,7 @@ app.use('/api/task-boards', taskBoardRoutes);
 app.use('/api/task-groups', taskGroupRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 const startServer = async (): Promise<void> => {
     try {
