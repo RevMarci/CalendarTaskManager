@@ -3,9 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import TextInput from '../../components/inputs/TextInput';
 import SaveButton from '../../components/buttons/SaveButton';
+import Divider from '../../components/Divider';
+import GoogleAuthButton from '../../components/buttons/GoogleAuthButton';
 
 export default function Register() {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
@@ -21,7 +23,7 @@ export default function Register() {
         }
 
         try {
-            await authService.register({ username, password });
+            await authService.register({ email, password });
             navigate('/task');
         } catch (err: any) {
             setError(err.message || 'Error during registration');
@@ -34,11 +36,12 @@ export default function Register() {
             
             <form onSubmit={handleSubmit} className="w-full flex flex-col gap-4">
                 <TextInput
-                    label="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    label="Email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
-                
+
                 <TextInput
                     label="Password"
                     type="password"
@@ -62,9 +65,16 @@ export default function Register() {
                 <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center">
                         <SaveButton type="submit">
-                            Registration
+                            Register
                         </SaveButton>
                     </div>
+
+                    <Divider label="Or" align="center" className="my-4" />
+    
+                    <GoogleAuthButton 
+                        text="signup_with" 
+                        onError={(msg) => setError(msg)} 
+                    />
                     
                     <div className="text-center text-sm text-gray-500">
                         Already have an account?{' '}

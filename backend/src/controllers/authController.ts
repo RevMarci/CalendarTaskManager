@@ -3,6 +3,9 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { sendSuccess, sendError } from '../utils/response';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 function generateToken(id: number): string {
     return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -12,13 +15,13 @@ function generateToken(id: number): string {
 
 export async function registerUser (req: Request, res: Response): Promise<void> {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        if (!username || !password) {
+        if (!email || !password) {
             return sendError(res, 'Please add all fields', 400);
         }
 
-        const userExists = await User.findOne({ where: { username } });
+        const userExists = await User.findOne({ where: { email } });
 
         if (userExists) {
             return sendError(res, 'User already exists', 400);
@@ -28,14 +31,14 @@ export async function registerUser (req: Request, res: Response): Promise<void> 
         const hashedPassword = await bcrypt.hash(password, salt);
 
         const user = await User.create({
-            username,
+            email,
             password: hashedPassword,
         });
 
         if (user) {
             sendSuccess(res, {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 token: generateToken(user.id),
             }, 'User registered successfully', 201);
         } else {
@@ -47,16 +50,26 @@ export async function registerUser (req: Request, res: Response): Promise<void> 
     }
 };
 
-export async function loginUser (req: Request, res: Response): Promise<void> {
+export async function loginUser(req: Request, res: Response): Promise<void> {
     try {
-        const { username, password } = req.body;
+        const { email, password } = req.body;
 
-        const user = await User.findOne({ where: { username } });
+        const user = await User.findOne({ where: { email } });
 
-        if (user && (await bcrypt.compare(password, user.password))) {
+        if (!user) {
+            return sendError(res, 'Invalid credentials', 401);
+        }
+
+        if (!user.password) {
+            return sendError(res, 'This account is linked to an external provider. Please use Google Login.', 401);
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (isMatch) {
             sendSuccess(res, {
                 id: user.id,
-                username: user.username,
+                email: user.email,
                 token: generateToken(user.id),
             }, 'Login successful');
         } else {
@@ -68,13 +81,60 @@ export async function loginUser (req: Request, res: Response): Promise<void> {
     }
 };
 
-export async function getMe (req: Request, res: Response): Promise<void> {
-    if (req.user) {
-        sendSuccess(res, {
-            id: req.user.id,
-            username: req.user.username,
+export async function googleLogin(req: Request, res: Response): Promise<void> {
+    try {
+        const { credential } = req.body;
+
+        if (!credential) {
+            return sendError(res, 'Google token is missing', 400);
+        }
+
+        // 1. Verify ID Token from Google
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
-    } else {
-         sendError(res, 'User not found', 404);
+
+        // 2. Get user info
+        const payload = ticket.getPayload();
+        if (!payload) {
+            return sendError(res, 'Invalid Google token', 400);
+        }
+
+        const { sub: googleId, email } = payload;
+
+        if (!email) {
+            return sendError(res, 'Google account must have an email', 400);
+        }
+
+        // 3. Validate user in our database by Google ID or email
+        let user = await User.findOne({ where: { googleId } });
+
+        if (!user) {
+            user = await User.findOne({ where: { email } });
+            if (user) {
+                user.googleId = googleId;
+                await user.save();
+            }
+        }
+
+        // 4. Create user if doesn't exist
+        if (!user) {
+            user = await User.create({
+                email: email,
+                googleId: googleId,
+            });
+        }
+
+        // 5. Generate JWT
+        sendSuccess(res, {
+            id: user.id,
+            email: user.email,
+            token: generateToken(user.id),
+        }, 'Google login successful', 200);
+
+    } catch (error) {
+        console.error('Google login error:', error);
+        sendError(res, 'Server error during Google login', 500, error);
     }
 };

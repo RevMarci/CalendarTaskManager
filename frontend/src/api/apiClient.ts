@@ -41,8 +41,21 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
         }
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            throw new Error(errorData?.message || `API Error: ${response.status}`);
+            let errorMessage = `API Error: ${response.status}`;
+                
+            try {
+                const errorText = await response.text();
+                
+                if (errorText) {
+                    const errorData = JSON.parse(errorText);
+                    if (errorData && errorData.message) {
+                        errorMessage = errorData.message;
+                    }
+                }
+            } catch (e) {
+            }
+            
+            throw new Error(errorMessage);
         }
 
         if (response.status === 204) {
