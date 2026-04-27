@@ -13,6 +13,11 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
                 email: req.user.email,
                 hasGoogleId: !!req.user.googleId, 
                 hasPassword: !!(dbUser && dbUser.password),
+                discordWebhook: dbUser?.discordWebhook || null,
+                eventNotificationsEnabled: dbUser?.eventNotificationsEnabled,
+                eventNotificationType: dbUser?.eventNotificationType,
+                dailySummaryEnabled: dbUser?.dailySummaryEnabled,
+                dailySummaryType: dbUser?.dailySummaryType,
             }, 'User profile retrieved successfully');
         } else {
             sendError(res, 'User not found', 404);
@@ -20,6 +25,51 @@ export async function getUserProfile(req: Request, res: Response): Promise<void>
     } catch (error) {
         console.error('Get profile error:', error);
         sendError(res, 'Server error while fetching profile', 500);
+    }
+}
+
+export async function updateUserProfile(req: Request, res: Response): Promise<void> {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return sendError(res, 'Unauthorized', 401);
+        }
+
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return sendError(res, 'User not found', 404);
+        }
+
+        const allowedFields = [
+            'discordWebhook',
+            'eventNotificationsEnabled',
+            'eventNotificationType',
+            'dailySummaryEnabled',
+            'dailySummaryType'
+        ];
+        const updates = req.body;
+
+        Object.keys(updates).forEach((key) => {
+            if (allowedFields.includes(key)) {
+                // @ts-ignore - dynamic field update
+                user[key] = updates[key] === "" ? null : updates[key];
+            }
+        });
+
+        await user.save();
+
+        sendSuccess(res, {
+            discordWebhook: user.discordWebhook,
+            eventNotificationsEnabled: user.eventNotificationsEnabled,
+            eventNotificationType: user.eventNotificationType,
+            dailySummaryEnabled: user.dailySummaryEnabled,
+            dailySummaryType: user.dailySummaryType
+        }, 'Profile updated successfully');
+    } catch (error) {
+        console.error('Update profile error:', error);
+        sendError(res, 'Server error while updating profile', 500);
     }
 }
 
