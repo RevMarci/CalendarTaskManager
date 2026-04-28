@@ -1,4 +1,4 @@
-import { sendEmail } from '../../providers/emailProvider';
+import { emailProvider } from '../../providers/emailProvider';
 
 class EmailNotificationService {
     public async sendEventReminder(user: any, event: any) {
@@ -11,7 +11,19 @@ class EmailNotificationService {
             <p>Description: ${event.description || 'No description provided.'}</p>
         `;
 
-        await sendEmail(user.email, subject, html);
+        await emailProvider.sendEmail(user.email, subject, html);
+    }
+
+    public async sendTaskReminder(user: any, task: any) {
+        const subject = `Task Reminder: ${task.title}`;
+        const html = `
+            <h3>Task Notification</h3>
+            <p>There is an upcoming task:</p>
+            <p><strong>${task.title}</strong></p>
+            <p>Due Date: ${new Date(task.dueDate).toLocaleString('hu-HU')}</p>
+            <p>Description: ${task.description || 'No description provided.'}</p>
+        `;
+        await emailProvider.sendEmail(user.email, subject, html);
     }
 }
 
