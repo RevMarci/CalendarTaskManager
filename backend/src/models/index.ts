@@ -14,6 +14,6 @@ TaskGroup.hasMany(Task, { foreignKey: 'taskGroupId', onDelete: 'CASCADE' });
 Task.belongsTo(TaskGroup, { foreignKey: 'taskGroupId' });
 
 User.hasMany(Event, { foreignKey: 'userId', onDelete: 'CASCADE' });
-Event.belongsTo(User, { foreignKey: 'userId' });
+Event.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 export { User, Task, TaskBoard, TaskGroup, Event };

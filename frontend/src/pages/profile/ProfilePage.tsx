@@ -7,16 +7,16 @@ import GoogleAuthButton from '../../components/buttons/GoogleAuthButton';
 import SaveButton from '../../components/buttons/SaveButton';
 import TextInput from '../../components/inputs/TextInput';
 import Divider from '../../components/Divider';
+import DiscordWebhookSection from './DiscordWebhookSection';
+import NotificationSettingsSection from './NotificationSettingsSection';
 
 export default function ProfilePage() {
     const navigate = useNavigate();
 
-    // Profil state-ek
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Jelszó űrlap state-ek
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -119,6 +119,20 @@ export default function ProfilePage() {
                         </div>
                     )}
                 </div>
+
+                <Divider />
+
+                <DiscordWebhookSection 
+                    initialWebhook={profile.discordWebhook || ''} 
+                    onUpdate={(val) => setProfile({ ...profile, discordWebhook: val })}
+                />
+
+                <Divider />
+
+                <NotificationSettingsSection 
+                    profile={profile} 
+                    onUpdate={(updates) => setProfile({ ...profile, ...updates })}
+                />
 
                 <Divider />
 

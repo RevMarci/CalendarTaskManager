@@ -5,6 +5,11 @@ export interface UserProfile {
     email: string;
     hasGoogleId: boolean;
     hasPassword: boolean; 
+    discordWebhook: string | null;
+    eventNotificationsEnabled: boolean;
+    eventNotificationType: 'email' | 'discord';
+    dailySummaryEnabled: boolean;
+    dailySummaryType: 'email' | 'discord';
 }
 
 export interface ChangePasswordData {
@@ -26,6 +31,13 @@ export const userService = {
         });
         
         return response.data;
+    },
+
+    updateProfile: async (data: Partial<UserProfile>): Promise<void> => {
+        await apiClient<ApiResponse<any>>('/users/profile', {
+            method: 'PATCH',
+            body: data
+        });
     },
 
     changePassword: async (data: ChangePasswordData): Promise<void> => {
