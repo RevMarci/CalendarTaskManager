@@ -12,6 +12,7 @@ import userRoutes from './routes/userRoutes';
 
 import sequelize from './config/database';
 import { dateParserMiddleware } from './middleware/dateParserMiddleware';
+import { initNotificationJob } from './jobs/notificationJob';
 
 import './models'; 
 
@@ -42,6 +43,9 @@ const startServer = async (): Promise<void> => {
 
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
+
+            initNotificationJob();
+            console.log('Cron notification job initialized.');
         });
     } catch (error) {
         console.error('Database connection failed:', error);
