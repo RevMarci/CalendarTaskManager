@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface CheckboxProps {
     label: string;
     checked: boolean;

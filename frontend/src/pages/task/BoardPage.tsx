@@ -175,7 +175,7 @@ export default function BoardPage() {
     };
 
     const handleDragEnd = async (result: DropResult) => {
-        const { destination, source, draggableId, type } = result;
+        const { destination, source, type } = result;
 
         if (!destination) return;
 
@@ -190,7 +190,6 @@ export default function BoardPage() {
             
             setGroups(sortedGroups);
 
-            const groupId = Number(draggableId.replace('group-', ''));
             try {
                 const groupUpdates = sortedGroups.map(g => ({ id: g.id, position: g.position! }));
                 await taskGroupService.updatePositions(groupUpdates);
@@ -206,7 +205,6 @@ export default function BoardPage() {
 
         const sourceGroupId = Number(source.droppableId);
         const destGroupId = Number(destination.droppableId);
-        const taskId = Number(draggableId);
 
         const newGroups = [...groups];
         const sourceGroupIndex = newGroups.findIndex(g => g.id === sourceGroupId);
