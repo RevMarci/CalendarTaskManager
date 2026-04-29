@@ -1,4 +1,5 @@
-import { emailProvider } from '../../providers/emailProvider';
+import { emailProviderSMTP } from '../../providers/emailProviderSMTP';
+import { emailProviderHTTPs } from '../../providers/emailProviderHTTPs';
 
 class EmailNotificationService {
     public async sendEventReminder(user: any, event: any) {
@@ -11,7 +12,7 @@ class EmailNotificationService {
             <p>Description: ${event.description || 'No description provided.'}</p>
         `;
 
-        await emailProvider.sendEmail(user.email, subject, html);
+        await this.sendEmail(user.email, subject, html);
     }
 
     public async sendTaskReminder(user: any, task: any) {
@@ -23,7 +24,18 @@ class EmailNotificationService {
             <p>Due Date: ${new Date(task.dueDate).toLocaleString('hu-HU')}</p>
             <p>Description: ${task.description || 'No description provided.'}</p>
         `;
-        await emailProvider.sendEmail(user.email, subject, html);
+        await this.sendEmail(user.email, subject, html);
+    }
+
+    private async sendEmail(to: string, subject: string, htmlContent: string) {
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Sending email with SMTP (Development mode)...');
+            return await emailProviderSMTP.sendEmail(to, subject, htmlContent);
+        }
+        else {
+            console.log('Sending email with HTTPS API (Production mode)...');
+            return await emailProviderHTTPs.sendEmail(to, subject, htmlContent);
+        }
     }
 }
 

@@ -3,7 +3,7 @@ import dns from 'dns';
 
 dns.setDefaultResultOrder('ipv4first');
 
-class EmailProvider {
+class EmailProviderSMTP {
     public async sendEmail(to: string, subject: string, htmlContent: string): Promise<boolean> {
         try {
             const transporter = nodemailer.createTransport({
@@ -37,4 +37,4 @@ class EmailProvider {
     }
 }
 
-export const emailProvider = new EmailProvider();
+export const emailProviderSMTP = new EmailProviderSMTP();
