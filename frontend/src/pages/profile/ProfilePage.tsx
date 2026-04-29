@@ -115,7 +115,7 @@ export default function ProfilePage() {
                             <p className="text-sm text-gray-400 mb-4 mt-6">
                                 Connect your Google account to enable one-click login.
                             </p>
-                            <GoogleAuthButton text='signin'/>
+                            <GoogleAuthButton text='signin' alignment="justify-start"/>
                         </div>
                     )}
                 </div>

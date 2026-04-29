@@ -7,12 +7,14 @@ interface GoogleAuthButtonProps {
     onError?: (error: string) => void;
     text?: "signin_with" | "signup_with" | "continue_with" | "signin";
     locale?: string;
+    alignment?: "justify-center" | "justify-start";
 }
 
 export default function GoogleAuthButton({ 
     onSuccess, 
     onError, 
     text = "signin_with", 
+    alignment = "justify-center",
 }: GoogleAuthButtonProps) {
     const navigate = useNavigate();
 
@@ -36,12 +38,13 @@ export default function GoogleAuthButton({
     };
 
     return (
-        <GoogleLogin
-            onSuccess={handleSuccess}
-            onError={() => onError?.('Error during Google login')}
-            theme="outline"
-            text={text}
-            width="100%"
-        />
+        <div className={`w-full flex ${alignment}`}>
+            <GoogleLogin
+                onSuccess={handleSuccess}
+                onError={() => onError?.('Error during Google login')}
+                theme="outline"
+                text={text}
+            />
+        </div>
     );
 }
