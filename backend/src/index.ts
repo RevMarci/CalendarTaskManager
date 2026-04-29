@@ -21,7 +21,19 @@ dotenv.config();
 const app: Application = express();
 const PORT: number = parseInt(process.env.PORT as string, 10) || 5000;
 
-app.use(cors());
+const allowedOrigins = [
+    process.env.FRONTEND_URL_PROD as string
+];
+
+if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.push(process.env.FRONTEND_URL_DEV as string);
+}
+
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    credentials: true
+}));
 app.use(express.json());
 
 // Middlewares
