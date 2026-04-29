@@ -1,12 +1,15 @@
 import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+dns.setDefaultResultOrder('ipv4first');
 
 class EmailProvider {
     public async sendEmail(to: string, subject: string, htmlContent: string): Promise<boolean> {
         try {
             const transporter = nodemailer.createTransport({
                 host: process.env.SMTP_HOST,
-                port: Number(process.env.SMTP_PORT) || 587,
-                secure: process.env.SMTP_PORT === '465',
+                port: Number(process.env.SMTP_PORT) || 465,
+                secure: process.env.SMTP_PORT === '465' || process.env.SMTP_PORT === undefined, 
                 auth: {
                     user: process.env.SMTP_USER,
                     pass: process.env.SMTP_PASS,
@@ -15,8 +18,7 @@ class EmailProvider {
                     rejectUnauthorized: false,
                 },
                 connectionTimeout: 10000,
-                family: 4 
-            } as any);
+            });
 
             const info = await transporter.sendMail({
                 from: `"Calendar Task Manager" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
