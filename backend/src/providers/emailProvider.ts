@@ -15,7 +15,8 @@ class EmailProvider {
                     rejectUnauthorized: false,
                 },
                 connectionTimeout: 10000,
-            });
+                family: 4 
+            } as any);
 
             const info = await transporter.sendMail({
                 from: `"Calendar Task Manager" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
