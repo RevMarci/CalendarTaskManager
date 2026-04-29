@@ -29,13 +29,13 @@ export async function getEvent (req: Request, res: Response): Promise<void> {
 
 export async function createEvent (req: Request, res: Response): Promise<void> {
     try {
-        const { title, start, end, allDay } = req.body;
+        const { title, start, end, allDay, description } = req.body;
 
         if (!title || !start) {
             return sendError(res, 'Title and start date are required', 400);
         }
 
-        const event = await eventService.createEvent({ title, start, end, allDay }, req.user!.id);
+        const event = await eventService.createEvent({ title, start, end, allDay, description }, req.user!.id);
         sendSuccess(res, event, 'Event created successfully', 201);
     } catch (error) {
         console.error('Error in createEvent:', error);

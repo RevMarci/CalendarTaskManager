@@ -7,6 +7,7 @@ interface EventAttributes {
     start: Date;
     end?: Date;
     allDay: boolean;
+    description?: string;
     userId: number;
 
     createdAt?: Date;
@@ -21,6 +22,7 @@ class Event extends Model<EventAttributes, EventCreationAttributes> implements E
     public start!: Date;
     public end!: Date;
     public allDay!: boolean;
+    public description?: string;
     public userId!: number;
 
     public readonly createdAt!: Date;
@@ -49,6 +51,10 @@ Event.init(
         allDay: {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
+        },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: true,
         },
         userId: {
             type: DataTypes.INTEGER,

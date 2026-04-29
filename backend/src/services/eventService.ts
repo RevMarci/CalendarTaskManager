@@ -12,7 +12,7 @@ export async function getEventById (id: string, userId: number): Promise<Event |
     });
 };
 
-export async function createEvent (data: { title: string; start: Date; end?: Date; allDay?: boolean }, userId: number): Promise<Event> {
+export async function createEvent (data: { title: string; start: Date; end?: Date; allDay?: boolean; description?: string }, userId: number): Promise<Event> {
     return await Event.create({
         ...data,
         allDay: data.allDay || false,
