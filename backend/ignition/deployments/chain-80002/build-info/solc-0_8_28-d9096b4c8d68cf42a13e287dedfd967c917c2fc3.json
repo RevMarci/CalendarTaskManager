@@ -1,0 +1,49 @@
+{
+  "_format": "hh3-sol-build-info-1",
+  "id": "solc-0_8_28-d9096b4c8d68cf42a13e287dedfd967c917c2fc3",
+  "solcVersion": "0.8.28",
+  "solcLongVersion": "0.8.28+commit.7893614a",
+  "compilerType": "solc",
+  "toolVersions": {
+    "hardhat": "3.4.3"
+  },
+  "userSourceNameMap": {
+    "contracts/DailyTaskLogger.sol": "project/contracts/DailyTaskLogger.sol"
+  },
+  "input": {
+    "language": "Solidity",
+    "settings": {
+      "evmVersion": "cancun",
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "outputSelection": {
+        "*": {
+          "": [
+            "ast"
+          ],
+          "*": [
+            "abi",
+            "evm.bytecode.linkReferences",
+            "evm.bytecode.object",
+            "evm.bytecode.opcodes",
+            "evm.bytecode.sourceMap",
+            "evm.deployedBytecode.immutableReferences",
+            "evm.deployedBytecode.linkReferences",
+            "evm.deployedBytecode.object",
+            "evm.deployedBytecode.opcodes",
+            "evm.deployedBytecode.sourceMap",
+            "evm.methodIdentifiers"
+          ]
+        }
+      },
+      "remappings": []
+    },
+    "sources": {
+      "project/contracts/DailyTaskLogger.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.24;\r\n\r\ncontract DailyTaskLogger {\r\n    address public owner;\r\n    mapping(string => string) private dailyHashes;\r\n\r\n    event HashSaved(string indexed userAndDate, string taskHash, uint256 timestamp);\r\n\r\n    constructor() {\r\n        owner = msg.sender;\r\n    }\r\n\r\n    modifier onlyOwner() {\r\n        require(msg.sender == owner, \"Csak a tulajdonos (backend) menthet!\");\r\n        _;\r\n    }\r\n\r\n    function saveDailyHash(string memory _userAndDate, string memory _taskHash) public onlyOwner {\r\n        require(bytes(dailyHashes[_userAndDate]).length == 0, \"Ezen a napon mar van mentes!\");\r\n        dailyHashes[_userAndDate] = _taskHash;\r\n        emit HashSaved(_userAndDate, _taskHash, block.timestamp);\r\n    }\r\n\r\n    function getDailyHash(string memory _userAndDate) public view returns (string memory) {\r\n        return dailyHashes[_userAndDate];\r\n    }\r\n}\r\n"
+      }
+    }
+  }
+}
