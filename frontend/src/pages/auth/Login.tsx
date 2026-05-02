@@ -10,17 +10,21 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         try {
             await authService.login({ email, password });
             navigate('/task');
         } catch (err: any) {
             setError(err.message || 'Error during login');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -34,6 +38,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
                 />
                 
                 <TextInput
@@ -41,6 +46,7 @@ export default function Login() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
                 />
 
                 {error && (
@@ -51,20 +57,22 @@ export default function Login() {
 
                 <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center">
-                        <SaveButton type="submit">
-                        Login
+                        <SaveButton type="submit" disabled={isLoading}>
+                            {isLoading ? 'Logging in...' : 'Login'}
                         </SaveButton>
                     </div>
 
                     <Divider label="Or" align="center" className="my-4" />
                     
-                    <GoogleAuthButton 
-                        onError={(msg) => setError(msg)} 
-                    />
+                    <div className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
+                        <GoogleAuthButton 
+                            onError={(msg) => setError(msg)} 
+                        />
+                    </div>
 
                     <div className="text-center text-sm text-gray-500">
                         Don't have an account yet?{' '}
-                        <Link to="/register" className="text-blue-400 hover:text-blue-300">
+                        <Link to="/register" className={`text-blue-400 hover:text-blue-300 ${isLoading ? 'pointer-events-none' : ''}`}>
                             Register
                         </Link>
                     </div>

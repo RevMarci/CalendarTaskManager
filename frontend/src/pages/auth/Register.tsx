@@ -11,6 +11,7 @@ export default function Register() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -22,11 +23,15 @@ export default function Register() {
             return;
         }
 
+        setIsLoading(true);
+
         try {
             await authService.register({ email, password });
             navigate('/task');
         } catch (err: any) {
             setError(err.message || 'Error during registration');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -40,6 +45,7 @@ export default function Register() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
                 />
 
                 <TextInput
@@ -47,6 +53,7 @@ export default function Register() {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
                 />
 
                 <TextInput
@@ -54,6 +61,7 @@ export default function Register() {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
+                    disabled={isLoading}
                 />
 
                 {error && (
@@ -64,21 +72,23 @@ export default function Register() {
 
                 <div className="mt-4 flex flex-col gap-4">
                     <div className="flex justify-center">
-                        <SaveButton type="submit">
-                            Register
+                        <SaveButton type="submit" disabled={isLoading}>
+                            {isLoading ? 'Registering...' : 'Register'}
                         </SaveButton>
                     </div>
 
                     <Divider label="Or" align="center" className="my-4" />
     
-                    <GoogleAuthButton 
-                        text="signup_with" 
-                        onError={(msg) => setError(msg)} 
-                    />
+                    <div className={isLoading ? 'opacity-50 pointer-events-none' : ''}>
+                        <GoogleAuthButton 
+                            text="signup_with" 
+                            onError={(msg) => setError(msg)} 
+                        />
+                    </div>
                     
                     <div className="text-center text-sm text-gray-500">
                         Already have an account?{' '}
-                        <Link to="/login" className="text-blue-400 hover:text-blue-300">
+                        <Link to="/login" className={`text-blue-400 hover:text-blue-300 ${isLoading ? 'pointer-events-none' : ''}`}>
                             Login
                         </Link>
                     </div>

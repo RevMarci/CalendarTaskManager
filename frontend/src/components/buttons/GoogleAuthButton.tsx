@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
@@ -17,8 +18,11 @@ export default function GoogleAuthButton({
     alignment = "justify-center",
 }: GoogleAuthButtonProps) {
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSuccess = async (credentialResponse: any) => {
+        setIsLoading(true);
+
         try {
             if (credentialResponse.credential) {
                 await authService.loginWithGoogle(credentialResponse.credential);
@@ -34,14 +38,19 @@ export default function GoogleAuthButton({
             if (onError) {
                 onError(errorMessage);
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className={`w-full flex ${alignment}`}>
+        <div className={`w-full flex ${alignment} transition-opacity duration-200 ${isLoading ? 'opacity-50 pointer-events-none' : ''}`}>
             <GoogleLogin
                 onSuccess={handleSuccess}
-                onError={() => onError?.('Error during Google login')}
+                onError={() => {
+                    setIsLoading(false);
+                    onError?.('Error during Google login');
+                }}
                 theme="outline"
                 text={text}
             />
