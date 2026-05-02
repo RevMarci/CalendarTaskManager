@@ -12,7 +12,9 @@ import userRoutes from './routes/userRoutes';
 
 import sequelize from './config/database';
 import { dateParserMiddleware } from './middleware/dateParserMiddleware';
+
 import { initNotificationJob } from './jobs/notificationJob';
+import { startBlockchainDailySaveJob } from './jobs/blockchainJob';
 
 import './models'; 
 
@@ -57,7 +59,9 @@ const startServer = async (): Promise<void> => {
             console.log(`Server running on port ${PORT}`);
 
             initNotificationJob();
-            console.log('Cron notification job initialized.');
+            console.log('Notification job initialized.');
+            startBlockchainDailySaveJob();
+            console.log('Blockchain daily save job scheduled.');
         });
     } catch (error) {
         console.error('Database connection failed:', error);
