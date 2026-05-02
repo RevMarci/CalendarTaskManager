@@ -12,12 +12,12 @@ contract DailyTaskLogger {
     }
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Csak a tulajdonos (backend) menthet!");
+        require(msg.sender == owner, "Only the owner (backend) can save hashes!");
         _;
     }
 
     function saveDailyHash(string memory _userAndDate, string memory _taskHash) public onlyOwner {
-        require(bytes(dailyHashes[_userAndDate]).length == 0, "Ezen a napon mar van mentes!");
+        require(bytes(dailyHashes[_userAndDate]).length == 0, "This date already has a hash!");
         dailyHashes[_userAndDate] = _taskHash;
         emit HashSaved(_userAndDate, _taskHash, block.timestamp);
     }

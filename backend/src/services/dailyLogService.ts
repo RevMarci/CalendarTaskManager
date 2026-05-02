@@ -4,6 +4,7 @@ import { blockchainProvider } from '../providers/blockchainProvider';
 
 import * as taskService from './task/taskService';
 import * as eventService from './eventService';
+import User from '../models/User';
 
 export async function backupDailyActivity(userId: number, targetDate: Date): Promise<any> {
     // YYYY-MM-DD format
@@ -23,6 +24,7 @@ export async function backupDailyActivity(userId: number, targetDate: Date): Pro
 }
 
 async function gatherDailyData(userId: number, dateString: string): Promise<object | null> {
+    const user = await User.findByPk(userId);
     const dailyTasks = await taskService.getTasksByDate(userId, dateString);
     const dailyEvents = await eventService.getEventsByDate(userId, dateString);
 
@@ -32,6 +34,7 @@ async function gatherDailyData(userId: number, dateString: string): Promise<obje
 
     return {
         userId,
+        userEmail: user ? user.email : 'Unknown',
         date: dateString,
         tasks: dailyTasks.map(t => t.toJSON()),
         events: dailyEvents.map(e => (e as any).toJSON ? (e as any).toJSON() : e)

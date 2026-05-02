@@ -9,7 +9,7 @@ export function startBlockchainDailySaveJob(): void {
         
         try {
             const targetDate = new Date();
-            targetDate.setDate(targetDate.getDate() - 1);
+            targetDate.setDate(targetDate.getDate() - 2);
             
             const users = await User.findAll();
 

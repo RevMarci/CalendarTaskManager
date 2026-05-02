@@ -33,7 +33,7 @@ class BlockchainProvider {
       
             return receipt.hash;
         } catch (error) {
-            console.error("Hiba a blokkláncra mentés során:", error);
+            console.error("Error while saving to blockchain:", error);
             throw new Error("Blockchain save failed");
         }
     }
@@ -43,7 +43,7 @@ class BlockchainProvider {
             const savedHash = await this.contract.getDailyHash(userAndDate);
             return savedHash;
         } catch (error) {
-            console.error("Hiba a blokkláncról való olvasás során:", error);
+            console.error("Error while reading from blockchain:", error);
             throw new Error("Blockchain read failed");
         }
     }
