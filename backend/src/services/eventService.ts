@@ -1,4 +1,5 @@
 import { Event } from '../models';
+import { Op } from 'sequelize';
 
 export async function getAllEvents (userId: number): Promise<Event[]> {
     return await Event.findAll({
@@ -33,4 +34,18 @@ export async function updateEvent (id: string, userId: number, data: any): Promi
     if (!event) return null;
 
     return await event.update(data);
+};
+
+export async function getEventsByDate(userId: number, dateString: string): Promise<Event[]> {
+    const startOfDay = new Date(`${dateString}T00:00:00.000Z`);
+    const endOfDay = new Date(`${dateString}T23:59:59.999Z`);
+
+    return await Event.findAll({
+        where: {
+            userId,
+            start: {
+                [Op.between]: [startOfDay, endOfDay]
+            }
+        }
+    });
 };

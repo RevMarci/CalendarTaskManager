@@ -9,10 +9,13 @@ import taskGroupRoutes from './routes/task/taskGroupRoutes';
 import eventRoutes from './routes/eventRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
+import dailyLogRoutes from './routes/dailyLogRoutes';
 
 import sequelize from './config/database';
 import { dateParserMiddleware } from './middleware/dateParserMiddleware';
+
 import { initNotificationJob } from './jobs/notificationJob';
+import { startBlockchainDailySaveJob } from './jobs/blockchainJob';
 
 import './models'; 
 
@@ -46,6 +49,7 @@ app.use('/api/task-groups', taskGroupRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/daily-logs', dailyLogRoutes);
 
 const startServer = async (): Promise<void> => {
     try {
@@ -57,7 +61,9 @@ const startServer = async (): Promise<void> => {
             console.log(`Server running on port ${PORT}`);
 
             initNotificationJob();
-            console.log('Cron notification job initialized.');
+            console.log('Notification job initialized.');
+            startBlockchainDailySaveJob();
+            console.log('Blockchain daily save job scheduled.');
         });
     } catch (error) {
         console.error('Database connection failed:', error);

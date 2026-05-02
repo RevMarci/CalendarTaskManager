@@ -3,6 +3,7 @@ import TaskGroup from '../../models/task/TaskGroup';
 import TaskBoard from '../../models/task/TaskBoard';
 import { schedulerService } from '../schedulerService';
 import sequelize from '../../config/database';
+import { Op } from 'sequelize';
 
 export async function getAllTasks (userId: number): Promise<Task[]> {
     return await Task.findAll({
@@ -196,4 +197,27 @@ export async function updateTaskPositions(updates: { id: number; position: numbe
         await transaction.rollback();
         throw error;
     }
+};
+
+export async function getTasksByDate(userId: number, dateString: string): Promise<Task[]> {
+    const startOfDay = new Date(`${dateString}T00:00:00.000Z`);
+    const endOfDay = new Date(`${dateString}T23:59:59.999Z`);
+
+    return await Task.findAll({
+        include: [{
+            model: TaskGroup,
+            required: true,
+            include: [{
+                model: TaskBoard,
+                required: true,
+                where: { userId }
+            }]
+        }],
+        where: {
+             [Op.or]: [
+                { startTime: { [Op.between]: [startOfDay, endOfDay] } },
+                { deadLine: { [Op.between]: [startOfDay, endOfDay] } }
+            ]
+        }
+    });
 };
