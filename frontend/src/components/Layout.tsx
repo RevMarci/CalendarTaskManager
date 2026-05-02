@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps) {
             )}
             
             <main className="flex-1 overflow-auto bg-black p-8 relative">
-                <div className={`h-full ${isAuthPage ? 'flex items-center justify-center' : 'max-w-7xl mx-auto'}`}>
+                <div className={`h-full ${isAuthPage ? 'flex items-center justify-center' : 'mx-auto'}`}>
                     {children}
                 </div>
             </main>

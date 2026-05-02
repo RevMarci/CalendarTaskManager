@@ -2,15 +2,15 @@ import { Request, Response } from 'express';
 import { DailyLog } from '../models';
 import { generateStableHash } from '../utils/cryptoUtils';
 import { blockchainProvider } from '../providers/blockchainProvider';
+import { sendSuccess, sendError } from '../utils/response';
 
 export const getLogByDate = async (req: Request, res: Response): Promise<void> => {
     try {
-        const userId = (req as any).user?.id; 
+        const userId = req.user?.id; 
         const { date } = req.params; // YYYY-MM-DD format
 
         if (!userId) {
-            res.status(401).json({ message: 'Unauthorized' });
-            return;
+            return sendError(res, 'Unauthorized', 401);
         }
 
         const logEntry = await DailyLog.findOne({
@@ -18,8 +18,7 @@ export const getLogByDate = async (req: Request, res: Response): Promise<void> =
         });
 
         if (!logEntry) {
-            res.status(404).json({ message: 'No log found for the specified date.' });
-            return;
+            return sendError(res, 'No log found for the specified date.', 404);
         }
 
         const originalData = JSON.parse(logEntry.content);
@@ -31,24 +30,22 @@ export const getLogByDate = async (req: Request, res: Response): Promise<void> =
             isVerified = (blockchainHash === logEntry.hash) && (blockchainHash !== "");
         } catch (bcError) {
             console.error('Blockchain access error while querying:', bcError);
-            res.status(503).json({ 
-                message: 'Data loaded successfully, but the blockchain network is currently unavailable for verification.',
+            return sendSuccess(res, {
                 transactionHash: logEntry.transactionHash,
                 dailyLog: originalData,
                 isVerified: false
-            });
-            return;
+            }, 'Data loaded, but the blockchain network is currently unavailable for verification.');
         }
 
-        res.status(200).json({
+        sendSuccess(res, {
             transactionHash: logEntry.transactionHash,
             dailyLog: originalData,
             isVerified: isVerified
-        });
+        }, 'Verified daily log retrieved.');
 
     } catch (error) {
         console.error('Error while fetching daily log:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        sendError(res, 'Internal server error while fetching the log', 500, error);
     }
 };
 
@@ -57,8 +54,7 @@ export const verifyUploadedLog = async (req: Request, res: Response): Promise<vo
         const dailyLogData = req.body;
 
         if (!dailyLogData || !dailyLogData.userId || !dailyLogData.date) {
-            res.status(400).json({ message: 'Invalid JSON format. Missing userId or date.' });
-            return;
+            return sendError(res, 'Invalid JSON format. Missing userId or date.', 400);
         }
 
         const { userId, date } = dailyLogData;
@@ -66,24 +62,25 @@ export const verifyUploadedLog = async (req: Request, res: Response): Promise<vo
         const calculatedHash = generateStableHash(dailyLogData);
 
         const userAndDateString = `${userId}_${date}`;
-        const blockchainHash = await blockchainProvider.getHashFromBlockchain(userAndDateString);
+        let blockchainHash = "";
+        
+        try {
+            blockchainHash = await blockchainProvider.getHashFromBlockchain(userAndDateString);
+        } catch (bcError) {
+             console.error('Blockchain access error while verifying:', bcError);
+             return sendError(res, 'The blockchain network is currently unavailable for verification.', 503);
+        }
 
         const isVerified = (calculatedHash === blockchainHash) && (blockchainHash !== "");
 
         if (isVerified) {
-            res.status(200).json({ 
-                isVerified: true, 
-                message: 'The file is authentic! Its content matches the state recorded on the blockchain.' 
-            });
+            sendSuccess(res, { isVerified: true }, 'The file is authentic! Its content matches the state recorded on the blockchain.');
         } else {
-            res.status(200).json({ 
-                isVerified: false, 
-                message: 'Verification failed! The file content has changed, or it is not recorded.' 
-            });
+            sendSuccess(res, { isVerified: false }, 'Verification failed! The file content has changed, or it is not recorded.');
         }
 
     } catch (error) {
         console.error('Error while verifying uploaded log:', error);
-        res.status(500).json({ message: 'Internal server error during verification' });
+        sendError(res, 'Internal server error while verifying the log', 500, error);
     }
 };

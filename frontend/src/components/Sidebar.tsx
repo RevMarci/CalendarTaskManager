@@ -23,6 +23,14 @@ export default function Sidebar() {
                 Task
               </Link>
             </li>
+            <li>
+              <Link 
+                to="/verify" 
+                className="block p-2 rounded hover:bg-gray-900 transition-colors"
+              >
+                Verification
+              </Link>
+            </li>
           </ul>
         </nav>
       </div>
