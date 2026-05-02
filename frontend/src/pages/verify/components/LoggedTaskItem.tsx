@@ -17,7 +17,7 @@ export default function LoggedTaskItem({ task }: Props) {
         <div 
             onClick={handleCopy}
             title="Click to copy raw JSON"
-            className="group relative bg-black/50 border border-gray-700 p-4 rounded hover:border-blue-900 transition-colors cursor-pointer"
+            className="group relative bg-black/50 border border-gray-700 p-4 rounded hover:border-blue-500 transition-colors cursor-pointer"
         >
             <div className="flex justify-between items-start">
                 <h4 className="text-lg font-semibold text-white group-hover:text-blue-100 transition-colors">
