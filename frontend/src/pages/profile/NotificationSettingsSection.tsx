@@ -83,7 +83,7 @@ export default function NotificationSettingsSection({ profile, onUpdate }: Props
                     />
                     {renderTypeSelector('event')}
                 </div>
-
+{/*
                 <div>
                     <Checkbox 
                         label="Enable daily summary (every morning)"
@@ -92,7 +92,7 @@ export default function NotificationSettingsSection({ profile, onUpdate }: Props
                     />
                     {renderTypeSelector('daily')}
                 </div>
-
+*/}
                 {message && (
                     <div className={`p-3 rounded text-sm ${message.type === 'success' ? 'bg-green-900/20 text-green-400 border border-green-800' : 'bg-red-900/20 text-red-400 border border-red-800'}`}>
                         {message.text}
