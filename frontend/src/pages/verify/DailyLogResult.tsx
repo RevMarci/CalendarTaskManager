@@ -44,14 +44,14 @@ export default function DailyLogResult({ data, onBack }: Props) {
     return (
         <div className="w-full h-[calc(100vh-8px)] flex flex-col -mt-8 -mb-8 bg-black">
             <div className="w-full flex justify-between items-center mb-0 px-6 pt-6 pb-4 border-b border-gray-800 flex-shrink-0">
-                <div className="flex items-center gap-4 w-full">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
                     <button 
                         onClick={onBack}
                         className="text-gray-500 hover:text-white transition-colors flex-shrink-0"
                     >
                         ← Back
                     </button>
-                    
+
                     <div className="flex-grow">
                         <h1 className="text-3xl font-bold text-white">
                             Log Details
@@ -59,8 +59,8 @@ export default function DailyLogResult({ data, onBack }: Props) {
                         <p className="text-sm text-gray-400 mt-1">Review your archived daily activity</p>
                     </div>
 
-                    <div className="flex-shrink-0">
-                        <SaveButton onClick={handleDownload} type="button">
+                    <div className="flex-shrink-0 w-full sm:w-auto">
+                        <SaveButton onClick={handleDownload} type="button" className="w-full sm:w-auto">
                             Download JSON Archive
                         </SaveButton>
                     </div>

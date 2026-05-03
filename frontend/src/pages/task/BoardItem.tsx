@@ -20,7 +20,7 @@ export default function BoardItem({ board, onClick }: BoardItemProps) {
 
     return (
         <div 
-            className="w-64 h-24 p-5 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors cursor-pointer group flex flex-col justify-between"
+            className="w-full h-24 p-5 rounded-lg border border-gray-700 hover:border-blue-500 transition-colors cursor-pointer group flex flex-col justify-between"
             onClick={() => onClick && onClick(board)}
         >
             <div className="w-full">
