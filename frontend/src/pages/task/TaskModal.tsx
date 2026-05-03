@@ -56,8 +56,8 @@ export default function TaskModal({ isOpen, onClose, onSave, onDelete, task }: T
             ...task, 
             title, 
             description, 
-            deadLine: deadLine || undefined, 
-            startTime: startTime || undefined,
+            deadLine: deadLine ? new Date(deadLine).toISOString() : undefined, 
+            startTime: startTime ? new Date(startTime).toISOString() : undefined,
             duration: finalDuration,
             status 
         });
