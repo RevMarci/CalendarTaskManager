@@ -4,7 +4,10 @@ import { sendSuccess, sendError } from '../utils/response';
 
 export async function getEvents (req: Request, res: Response): Promise<void> {
     try {
-        const events = await eventService.getAllEvents(req.user!.id);
+        const startDate = req.query.start as string | undefined;
+        const endDate = req.query.end as string | undefined;
+
+        const events = await eventService.getAllEvents(req.user!.id, startDate, endDate);
         sendSuccess(res, events, 'Events fetched successfully');
     } catch (error) {
         console.error('Error in getEvents:', error);

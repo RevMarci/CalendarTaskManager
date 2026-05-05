@@ -1,9 +1,31 @@
 import { Event } from '../models';
 import { Op } from 'sequelize';
 
-export async function getAllEvents (userId: number): Promise<Event[]> {
+export async function getAllEvents(userId: number, startDate?: string, endDate?: string): Promise<Event[]> {
+    const whereClause: any = {
+        userId: userId
+    };
+
+    if (startDate && endDate) {
+        whereClause[Op.and] = [
+            { start: { [Op.lte]: endDate } },
+            {
+                [Op.or]: [
+                    { end: { [Op.gte]: startDate } },
+                    { 
+                        [Op.and]: [
+                            { end: null }, 
+                            { start: { [Op.gte]: startDate } }
+                        ] 
+                    }
+                ]
+            }
+        ];
+    }
+
     return await Event.findAll({
-        where: { userId }
+        where: whereClause,
+        order: [['start', 'ASC']]
     });
 };
 
