@@ -9,6 +9,7 @@ import TextInput from '../../components/inputs/TextInput';
 import Divider from '../../components/Divider';
 import DiscordWebhookSection from './DiscordWebhookSection';
 import NotificationSettingsSection from './NotificationSettingsSection';
+import ExternalCalendarsSection from './ExternalCalendarsSection';
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -133,6 +134,10 @@ export default function ProfilePage() {
                     profile={profile} 
                     onUpdate={(updates) => setProfile({ ...profile, ...updates })}
                 />
+
+                <Divider />
+
+                <ExternalCalendarsSection />
 
                 <Divider />
 

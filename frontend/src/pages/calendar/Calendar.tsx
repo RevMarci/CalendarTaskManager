@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -23,30 +23,48 @@ export default function Calendar() {
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-    useEffect(() => {
-        loadEvents();
-    }, []);
+    const currentRange = useRef<{ start: string; end: string } | null>(null);
 
-    const loadEvents = async () => {
+    const handleDatesSet = async (dateInfo: any) => {
+        const startStr = dateInfo.startStr;
+        const endStr = dateInfo.endStr;
+        
+        currentRange.current = { start: startStr, end: endStr };
+        await loadData(startStr, endStr);
+    };
+
+    const loadData = async (startDate: string, endDate: string) => {
         try {
             const [calendarEvents, fetchedTasks] = await Promise.all([
-                eventService.getAll(),
+                eventService.getAll(startDate, endDate),
                 taskService.getAll()
             ]);
 
             setTasks(fetchedTasks);
 
+            const formattedCalendarEvents = calendarEvents.map(event => {
+                const customColor = event.externalCalendar?.color;
+                if (customColor) {
+                    return {
+                        ...event,
+                        backgroundColor: customColor,
+                        borderColor: customColor
+                    } as any as CalendarEvent;
+                }
+                return event;
+            });
+
             const taskEvents = fetchedTasks
                 .filter(task => task.startTime && task.duration && task.status === 'pending')
                 .map(task => {
-                    const startDate = new Date(task.startTime!);
-                    const endDate = new Date(startDate.getTime() + (task.duration! * 60 * 1000));
+                    const startDateObj = new Date(task.startTime!);
+                    const endDateObj = new Date(startDateObj.getTime() + (task.duration! * 60 * 1000));
                     
                     return {
                         id: `task-${task.id}`,
                         title: `📝 ${task.title}`,
                         start: task.startTime!,
-                        end: endDate.toISOString(),
+                        end: endDateObj.toISOString(),
                         allDay: false,
                         backgroundColor: '#10B981',
                         borderColor: '#059669',
@@ -58,9 +76,15 @@ export default function Calendar() {
                     } as any as CalendarEvent;
                 });
 
-            setEvents([...calendarEvents, ...taskEvents]);
+            setEvents([...formattedCalendarEvents, ...taskEvents]);
         } catch (error) {
             console.error("Error loading items: ", error);
+        }
+    };
+
+    const reloadCurrentRange = async () => {
+        if (currentRange.current) {
+            await loadData(currentRange.current.start, currentRange.current.end);
         }
     };
 
@@ -107,7 +131,7 @@ export default function Calendar() {
             } else {
                 await eventService.create(eventData);
             }
-            await loadEvents();
+            await reloadCurrentRange();
         } catch (error) {
             alert("Error while saving event.");
         }
@@ -116,7 +140,7 @@ export default function Calendar() {
     const handleEventDelete = async (id: string) => {
         try {
             await eventService.delete(id);
-            await loadEvents();
+            await reloadCurrentRange();
         } catch (error) {
             alert("Error while deleting event.");
         }
@@ -129,7 +153,7 @@ export default function Calendar() {
             } else {
                 await taskService.create(taskData);
             }
-            await loadEvents();
+            await reloadCurrentRange();
         } catch (error) {
             alert("Error while saving task.");
         }
@@ -138,7 +162,7 @@ export default function Calendar() {
     const handleTaskDelete = async (id: number) => {
         try {
             await taskService.delete(id);
-            await loadEvents();
+            await reloadCurrentRange();
         } catch (error) {
             alert("Error while deleting task.");
         }
@@ -164,6 +188,7 @@ export default function Calendar() {
                         right: 'dayGridMonth,timeGridWeek,timeGridDay'
                     }}
                     events={events}
+                    datesSet={handleDatesSet}
                     eventClassNames={(arg) => {
                         if (arg.event.extendedProps.type === 'task') return ['custom-task-event'];
                         if (arg.event.allDay) return ['custom-allday-event'];

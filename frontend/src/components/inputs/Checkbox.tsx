@@ -13,7 +13,7 @@ export default function Checkbox({ label, checked, onChange }: CheckboxProps) {
             <div className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
                 checked 
                     ? 'bg-blue-600 border-blue-600 text-black' 
-                    : 'border-gray-600 bg-transparent group-hover:border-gray-500'
+                    : 'border-gray-600 bg-transparent group-hover:border-gray-700'
             }`}>
                 {checked && (
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">

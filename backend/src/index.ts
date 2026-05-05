@@ -10,12 +10,14 @@ import eventRoutes from './routes/eventRoutes';
 import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import dailyLogRoutes from './routes/dailyLogRoutes';
+import externalCalendarRoutes from './routes/externalCalendarRoutes';
 
 import sequelize from './config/database';
 import { dateParserMiddleware } from './middleware/dateParserMiddleware';
 
 import { initNotificationJob } from './jobs/notificationJob';
 import { startBlockchainDailySaveJob } from './jobs/blockchainJob';
+import { initCalendarSyncJob } from './jobs/calendarSyncJob';
 
 import './models'; 
 
@@ -50,6 +52,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/daily-logs', dailyLogRoutes);
+app.use('/api/external-calendars', externalCalendarRoutes);
 
 const startServer = async (): Promise<void> => {
     try {
@@ -64,6 +67,8 @@ const startServer = async (): Promise<void> => {
             console.log('Notification job initialized.');
             startBlockchainDailySaveJob();
             console.log('Blockchain daily save job scheduled.');
+            initCalendarSyncJob();
+            console.log('Calendar sync job scheduled.');
         });
     } catch (error) {
         console.error('Database connection failed:', error);

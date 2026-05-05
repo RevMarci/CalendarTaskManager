@@ -4,7 +4,10 @@ import { sendSuccess, sendError } from '../utils/response';
 
 export async function getEvents (req: Request, res: Response): Promise<void> {
     try {
-        const events = await eventService.getAllEvents(req.user!.id);
+        const startDate = req.query.start as string | undefined;
+        const endDate = req.query.end as string | undefined;
+
+        const events = await eventService.getAllEvents(req.user!.id, startDate, endDate);
         sendSuccess(res, events, 'Events fetched successfully');
     } catch (error) {
         console.error('Error in getEvents:', error);
@@ -29,13 +32,13 @@ export async function getEvent (req: Request, res: Response): Promise<void> {
 
 export async function createEvent (req: Request, res: Response): Promise<void> {
     try {
-        const { title, start, end, allDay, description } = req.body;
+        const { title, start, end, allDay, description, rrule } = req.body;
 
         if (!title || !start) {
             return sendError(res, 'Title and start date are required', 400);
         }
 
-        const event = await eventService.createEvent({ title, start, end, allDay, description }, req.user!.id);
+        const event = await eventService.createEvent({ title, start, end, allDay, description, rrule }, req.user!.id);
         sendSuccess(res, event, 'Event created successfully', 201);
     } catch (error) {
         console.error('Error in createEvent:', error);

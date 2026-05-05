@@ -54,3 +54,8 @@
 .custom-allday-event .fc-event-main {
     @apply text-purple-200 text-center font-bold;
 }
+.fc-event-title,
+.fc-event-time,
+.fc-event-main {
+    font-weight: 400 !important;
+}
