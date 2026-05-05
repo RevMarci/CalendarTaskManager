@@ -29,6 +29,8 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     const [allDay, setAllDay] = useState(false);
     const [recurrence, setRecurrence] = useState<RecurrenceType>('NONE');
 
+    const isExternal = !!event?.externalCalendarId;
+
     const formatDateForInput = (dateStr: string | Date) => {
         if (!dateStr) return '';
         const d = new Date(dateStr);
@@ -89,6 +91,8 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
+        if (isExternal) return;
+
         const targetId = event?.originalEventId ? String(event.originalEventId) : event?.id;
 
         const eventData: Partial<CalendarEvent> = {
@@ -106,6 +110,8 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     };
 
     const handleDelete = () => {
+        if (isExternal) return;
+
         const targetId = event?.originalEventId ? String(event.originalEventId) : event?.id;
 
         if (targetId && confirm('You sure you want to delete this event? (If it repeats, all instances will be deleted)')) {
@@ -118,65 +124,77 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={event ? 'Edit event' : 'New event'}
+            title={isExternal ? 'View External Event' : (event ? 'Edit event' : 'New event')}
         >
             <form onSubmit={handleSubmit} className="space-y-5">
-                <TextInput 
-                    label="Title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                />
+                
+                {isExternal && (
+                    <div className="p-3 bg-blue-900/20 border border-blue-800 rounded-md text-blue-400 text-sm flex items-start gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 mt-0.5 shrink-0">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z" clipRule="evenodd" />
+                        </svg>
+                        <p>This event is synced from an external calendar and cannot be edited or deleted here.</p>
+                    </div>
+                )}
 
-                <Checkbox 
-                    label="All Day Event"
-                    checked={allDay}
-                    onChange={setAllDay}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
+                <div className={`space-y-5 ${isExternal ? 'opacity-60 pointer-events-none' : ''}`}>
                     <TextInput 
-                        label="Start"
-                        type="datetime-local"
-                        value={start}
-                        onChange={(e) => setStart(e.target.value)}
+                        label="Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
                         required
-                        style={{ colorScheme: 'dark' }}
                     />
-                    
-                    <TextInput 
-                        label="End"
-                        type="datetime-local"
-                        value={end}
-                        onChange={(e) => setEnd(e.target.value)}
-                        required
-                        style={{ colorScheme: 'dark' }}
+
+                    <Checkbox 
+                        label="All Day Event"
+                        checked={allDay}
+                        onChange={setAllDay}
+                    />
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <TextInput 
+                            label="Start"
+                            type="datetime-local"
+                            value={start}
+                            onChange={(e) => setStart(e.target.value)}
+                            required
+                            style={{ colorScheme: 'dark' }}
+                        />
+                        
+                        <TextInput 
+                            label="End"
+                            type="datetime-local"
+                            value={end}
+                            onChange={(e) => setEnd(e.target.value)}
+                            required
+                            style={{ colorScheme: 'dark' }}
+                        />
+                    </div>
+
+                    <SelectInput
+                        label="Repeat"
+                        value={recurrence}
+                        onChange={(val) => setRecurrence(val as RecurrenceType)}
+                        options={[
+                            { value: 'NONE', label: 'Does not repeat' },
+                            { value: 'DAILY', label: 'Daily' },
+                            { value: 'WEEKLY', label: 'Weekly' },
+                            { value: 'MONTHLY', label: 'Monthly' },
+                            { value: 'YEARLY', label: 'Yearly' },
+                        ]}
+                    />
+
+                    <TextArea 
+                        label="Description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="h-24"
                     />
                 </div>
 
-                <SelectInput
-                    label="Repeat"
-                    value={recurrence}
-                    onChange={(val) => setRecurrence(val as RecurrenceType)}
-                    options={[
-                        { value: 'NONE', label: 'Does not repeat' },
-                        { value: 'DAILY', label: 'Daily' },
-                        { value: 'WEEKLY', label: 'Weekly' },
-                        { value: 'MONTHLY', label: 'Monthly' },
-                        { value: 'YEARLY', label: 'Yearly' },
-                    ]}
-                />
-
-                <TextArea 
-                    label="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="h-24"
-                />
-
                 <div className="flex justify-between items-center mt-8 pt-4 border-t border-gray-900">
                     <div>
-                        {event && (
+                        {event && !isExternal && (
                             <DeleteButton type="button" onClick={handleDelete}>
                                 Delete
                             </DeleteButton>
@@ -185,12 +203,14 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
 
                     <div className="flex gap-3">
                         <CancelButton onClick={onClose}>
-                            Cancel
+                            {isExternal ? 'Close' : 'Cancel'}
                         </CancelButton>
                         
-                        <SaveButton type="submit">
-                            Save
-                        </SaveButton>
+                        {!isExternal && (
+                            <SaveButton type="submit">
+                                Save
+                            </SaveButton>
+                        )}
                     </div>
                 </div>
             </form>

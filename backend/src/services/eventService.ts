@@ -1,12 +1,18 @@
 import { Event } from '../models';
 import { Op , WhereOptions } from 'sequelize';
 import { rrulestr } from 'rrule';
+import ExternalCalendar from '../models/ExternalCalendar';
 
 export async function getAllEvents(userId: number, startDate?: string, endDate?: string): Promise<any[]> {
     const whereClause = buildDateRangeWhereClause(userId, startDate, endDate);
 
     const dbEvents = await Event.findAll({
         where: whereClause,
+        include: [{
+            model: ExternalCalendar,
+            as: 'externalCalendar',
+            attributes: ['color']
+        }],
         order: [['start', 'ASC']]
     });
 

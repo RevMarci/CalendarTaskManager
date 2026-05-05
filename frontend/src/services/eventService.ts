@@ -9,6 +9,11 @@ export interface CalendarEvent {
     allDay?: boolean;
     rrule?: string | null;
     originalEventId?: string | number;
+    externalCalendarId?: number | null;
+
+    externalCalendar?: {
+        color?: string;
+    };
 }
 
 interface ApiResponse<T> {

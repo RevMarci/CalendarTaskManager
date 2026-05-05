@@ -42,6 +42,18 @@ export default function Calendar() {
 
             setTasks(fetchedTasks);
 
+            const formattedCalendarEvents = calendarEvents.map(event => {
+                const customColor = event.externalCalendar?.color;
+                if (customColor) {
+                    return {
+                        ...event,
+                        backgroundColor: customColor,
+                        borderColor: customColor
+                    } as any as CalendarEvent;
+                }
+                return event;
+            });
+
             const taskEvents = fetchedTasks
                 .filter(task => task.startTime && task.duration && task.status === 'pending')
                 .map(task => {
@@ -64,7 +76,7 @@ export default function Calendar() {
                     } as any as CalendarEvent;
                 });
 
-            setEvents([...calendarEvents, ...taskEvents]);
+            setEvents([...formattedCalendarEvents, ...taskEvents]);
         } catch (error) {
             console.error("Error loading items: ", error);
         }
