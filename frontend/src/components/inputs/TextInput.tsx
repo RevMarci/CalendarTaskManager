@@ -12,7 +12,7 @@ export default function TextInput({ label, className = '', type = 'text', ...pro
             </label>
             <input 
                 type={type}
-                className={`w-full bg-black border border-gray-800 rounded p-2.5 text-white placeholder-gray-600 focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors ${className}`}
+                className={`w-full bg-black border border-gray-800 rounded p-2.5 text-white placeholder-gray-600 focus:border-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-900/50 transition-colors hover:border-gray-700 ${className}`}
                 {...props}
             />
         </div>

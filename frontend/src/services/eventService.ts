@@ -7,6 +7,8 @@ export interface CalendarEvent {
     start: string; 
     end: string;   
     allDay?: boolean;
+    rrule?: string | null;
+    originalEventId?: string | number;
 }
 
 interface ApiResponse<T> {

@@ -1,33 +1,21 @@
 import { Event } from '../models';
-import { Op } from 'sequelize';
+import { Op , WhereOptions } from 'sequelize';
+import { rrulestr } from 'rrule';
 
-export async function getAllEvents(userId: number, startDate?: string, endDate?: string): Promise<Event[]> {
-    const whereClause: any = {
-        userId: userId
-    };
+export async function getAllEvents(userId: number, startDate?: string, endDate?: string): Promise<any[]> {
+    const whereClause = buildDateRangeWhereClause(userId, startDate, endDate);
 
-    if (startDate && endDate) {
-        whereClause[Op.and] = [
-            { start: { [Op.lte]: endDate } },
-            {
-                [Op.or]: [
-                    { end: { [Op.gte]: startDate } },
-                    { 
-                        [Op.and]: [
-                            { end: null }, 
-                            { start: { [Op.gte]: startDate } }
-                        ] 
-                    }
-                ]
-            }
-        ];
-    }
-
-    return await Event.findAll({
+    const dbEvents = await Event.findAll({
         where: whereClause,
         order: [['start', 'ASC']]
     });
-};
+
+    if (!startDate || !endDate) {
+        return dbEvents;
+    }
+
+    return expandRecurringEvents(dbEvents, new Date(startDate), new Date(endDate));
+}
 
 export async function getEventById (id: string, userId: number): Promise<Event | null> {
     return await Event.findOne({
@@ -35,7 +23,7 @@ export async function getEventById (id: string, userId: number): Promise<Event |
     });
 };
 
-export async function createEvent (data: { title: string; start: Date; end?: Date; allDay?: boolean; description?: string }, userId: number): Promise<Event> {
+export async function createEvent (data: { title: string; start: Date; end?: Date; allDay?: boolean; description?: string; rrule?: string }, userId: number): Promise<Event> {
     return await Event.create({
         ...data,
         allDay: data.allDay || false,
@@ -71,3 +59,77 @@ export async function getEventsByDate(userId: number, dateString: string): Promi
         }
     });
 };
+
+function buildDateRangeWhereClause(userId: number, startDate?: string, endDate?: string): WhereOptions {
+    const whereClause: any = { userId: userId };
+
+    if (startDate && endDate) {
+        whereClause[Op.or] = [
+            {
+                rrule: { [Op.is]: null },
+                start: { [Op.lte]: endDate },
+                [Op.or]: [
+                    { end: { [Op.gte]: startDate } },
+                    { 
+                        [Op.and]: [
+                            { end: null }, 
+                            { start: { [Op.gte]: startDate } }
+                        ] 
+                    }
+                ]
+            },
+            {
+                rrule: { [Op.not]: null },
+                start: { [Op.lte]: endDate }
+            }
+        ];
+    }
+
+    return whereClause;
+}
+
+function expandRecurringEvents(dbEvents: Event[], windowStart: Date, windowEnd: Date): any[] {
+    const expandedEvents: any[] = [];
+
+    for (const event of dbEvents) {
+        const eventData = event.toJSON();
+
+        if (!eventData.rrule) {
+            expandedEvents.push(eventData);
+        } else {
+            const occurrences = generateOccurrences(eventData, windowStart, windowEnd);
+            expandedEvents.push(...occurrences);
+        }
+    }
+
+    return expandedEvents;
+}
+
+function generateOccurrences(eventData: any, windowStart: Date, windowEnd: Date): any[] {
+    const occurrencesList: any[] = [];
+    
+    try {
+        const rule = rrulestr(eventData.rrule, { dtstart: new Date(eventData.start) });
+        const occurrences = rule.between(windowStart, windowEnd, true);
+        
+        const durationMs = eventData.end ? new Date(eventData.end).getTime() - new Date(eventData.start).getTime() : 0;
+
+        for (const date of occurrences) {
+            const newStart = new Date(date);
+            const newEnd = eventData.end ? new Date(newStart.getTime() + durationMs) : null;
+
+            occurrencesList.push({
+                ...eventData,
+                id: `${eventData.id}_${newStart.getTime()}`, 
+                originalEventId: eventData.id, 
+                start: newStart,
+                end: newEnd,
+            });
+        }
+    } catch (error) {
+        console.error(`Error parsing rrule for event ${eventData.id}:`, error);
+        occurrencesList.push(eventData); 
+    }
+
+    return occurrencesList;
+}

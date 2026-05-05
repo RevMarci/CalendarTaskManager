@@ -4,6 +4,7 @@ import Modal from '../../components/Modal';
 import TextInput from '../../components/inputs/TextInput';
 import TextArea from '../../components/inputs/TextArea';
 import Checkbox from '../../components/inputs/Checkbox';
+import SelectInput from '../../components/inputs/SelectInput';
 import DeleteButton from '../../components/buttons/DeleteButton';
 import CancelButton from '../../components/buttons/CancelButton';
 import SaveButton from '../../components/buttons/SaveButton';
@@ -18,12 +19,15 @@ interface CalendarModalProps {
     initialDateRange?: { start: string; end: string; allDay: boolean } | null;
 }
 
+type RecurrenceType = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+
 export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event, initialDateRange }: CalendarModalProps) {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [start, setStart] = useState('');
     const [end, setEnd] = useState('');
     const [allDay, setAllDay] = useState(false);
+    const [recurrence, setRecurrence] = useState<RecurrenceType>('NONE');
 
     const formatDateForInput = (dateStr: string | Date) => {
         if (!dateStr) return '';
@@ -31,6 +35,25 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
         const offset = d.getTimezoneOffset() * 60000;
         const localISOTime = (new Date(d.getTime() - offset)).toISOString().slice(0, 16);
         return localISOTime;
+    };
+
+    const parseRruleToRecurrence = (rruleString?: string | null): RecurrenceType => {
+        if (!rruleString) return 'NONE';
+        if (rruleString.includes('FREQ=DAILY')) return 'DAILY';
+        if (rruleString.includes('FREQ=WEEKLY')) return 'WEEKLY';
+        if (rruleString.includes('FREQ=MONTHLY')) return 'MONTHLY';
+        if (rruleString.includes('FREQ=YEARLY')) return 'YEARLY';
+        return 'NONE';
+    };
+
+    const createRruleString = (type: RecurrenceType): string | null => {
+        switch (type) {
+            case 'DAILY': return 'FREQ=DAILY';
+            case 'WEEKLY': return 'FREQ=WEEKLY';
+            case 'MONTHLY': return 'FREQ=MONTHLY';
+            case 'YEARLY': return 'FREQ=YEARLY';
+            default: return null;
+        }
     };
 
     useEffect(() => {
@@ -41,12 +64,14 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
                 setStart(toLocalISOString(event.start));
                 setEnd(toLocalISOString(event.end));
                 setAllDay(event.allDay || false);
+                setRecurrence(parseRruleToRecurrence(event.rrule));
             } else if (initialDateRange) {
                 setTitle('');
                 setDescription('');
                 setStart(toLocalISOString(initialDateRange.start));
                 setEnd(toLocalISOString(initialDateRange.end));
                 setAllDay(initialDateRange.allDay);
+                setRecurrence('NONE');
             } else {
                 const now = new Date();
                 const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
@@ -56,6 +81,7 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
                 setStart(formatDateForInput(now));
                 setEnd(formatDateForInput(oneHourLater));
                 setAllDay(false);
+                setRecurrence('NONE');
             }
         }
     }, [event, isOpen, initialDateRange]);
@@ -63,13 +89,16 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         
+        const targetId = event?.originalEventId ? String(event.originalEventId) : event?.id;
+
         const eventData: Partial<CalendarEvent> = {
-            ...event,
+            id: targetId, 
             title,
             description,
             start: new Date(start).toISOString(),
             end: new Date(end).toISOString(),
-            allDay
+            allDay,
+            rrule: createRruleString(recurrence)
         };
 
         onSave(eventData);
@@ -77,8 +106,10 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
     };
 
     const handleDelete = () => {
-        if (event?.id && confirm('You sure you want to delete this event?')) {
-            onDelete(event.id);
+        const targetId = event?.originalEventId ? String(event.originalEventId) : event?.id;
+
+        if (targetId && confirm('You sure you want to delete this event? (If it repeats, all instances will be deleted)')) {
+            onDelete(targetId);
             onClose();
         }
     };
@@ -122,6 +153,19 @@ export default function CalendarModal({ isOpen, onClose, onSave, onDelete, event
                         style={{ colorScheme: 'dark' }}
                     />
                 </div>
+
+                <SelectInput
+                    label="Repeat"
+                    value={recurrence}
+                    onChange={(val) => setRecurrence(val as RecurrenceType)}
+                    options={[
+                        { value: 'NONE', label: 'Does not repeat' },
+                        { value: 'DAILY', label: 'Daily' },
+                        { value: 'WEEKLY', label: 'Weekly' },
+                        { value: 'MONTHLY', label: 'Monthly' },
+                        { value: 'YEARLY', label: 'Yearly' },
+                    ]}
+                />
 
                 <TextArea 
                     label="Description"

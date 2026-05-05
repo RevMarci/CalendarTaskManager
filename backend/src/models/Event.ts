@@ -9,12 +9,13 @@ interface EventAttributes {
     allDay: boolean;
     description?: string;
     userId: number;
+    rrule?: string | null;
 
     createdAt?: Date;
     updatedAt?: Date;
 }
 
-interface EventCreationAttributes extends Optional<EventAttributes, 'id' | 'allDay'> {}
+interface EventCreationAttributes extends Optional<EventAttributes, 'id' | 'allDay' | 'rrule'> {}
 
 class Event extends Model<EventAttributes, EventCreationAttributes> implements EventAttributes {
     public id!: number;
@@ -24,6 +25,7 @@ class Event extends Model<EventAttributes, EventCreationAttributes> implements E
     public allDay!: boolean;
     public description?: string;
     public userId!: number;
+    public rrule?: string | null;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -59,6 +61,10 @@ Event.init(
         userId: {
             type: DataTypes.INTEGER,
             allowNull: false,
+        },
+        rrule: {
+            type: DataTypes.STRING,
+            allowNull: true,
         },
     },
     {
