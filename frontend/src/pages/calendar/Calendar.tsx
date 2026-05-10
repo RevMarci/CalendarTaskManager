@@ -55,14 +55,19 @@ export default function Calendar() {
             });
 
             const taskEvents = fetchedTasks
-                .filter(task => task.startTime && task.duration && task.status === 'pending')
+                .filter(task => task.startTime && task.duration)
                 .map(task => {
                     const startDateObj = new Date(task.startTime!);
                     const endDateObj = new Date(startDateObj.getTime() + (task.duration! * 60 * 1000));
+
+                    let taskTitle = `📝 ${task.title}`;
+                    if (task.status === 'completed') {
+                        taskTitle = `✅ ${task.title}`;
+                    }
                     
                     return {
                         id: `task-${task.id}`,
-                        title: `📝 ${task.title}`,
+                        title: taskTitle,
                         start: task.startTime!,
                         end: endDateObj.toISOString(),
                         allDay: false,
