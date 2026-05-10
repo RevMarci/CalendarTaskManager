@@ -18,6 +18,7 @@ import { dateParserMiddleware } from './middleware/dateParserMiddleware';
 import { initNotificationJob } from './jobs/notificationJob';
 import { startBlockchainDailySaveJob } from './jobs/blockchainJob';
 import { initCalendarSyncJob } from './jobs/calendarSyncJob';
+import { initRescheduleJob } from './jobs/rescheduleJob';
 
 import './models'; 
 
@@ -69,6 +70,8 @@ const startServer = async (): Promise<void> => {
             console.log('Blockchain daily save job scheduled.');
             initCalendarSyncJob();
             console.log('Calendar sync job scheduled.');
+            initRescheduleJob();
+            console.log('Reschedule job scheduled.');
         });
     } catch (error) {
         console.error('Database connection failed:', error);
